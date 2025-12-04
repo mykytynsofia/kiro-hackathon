@@ -54,21 +54,27 @@
 
 ### Backend
 - ✅ All handlers implemented and registered
-- ✅ **Get game list handler added**
-- ⚠️ Services (TimerManager, StateSyncService, ValidationService) created but not yet integrated into handlers
-- ⚠️ Need to wire up services in handler implementations
+- ✅ Get game list handler added
+- ✅ **Phase advancement logic (checks all players submitted before advancing)**
+- ✅ **Room rotation logic (players move to next room after each phase)**
+- ✅ **Game completion detection (ends when all players visited all rooms)**
+- ✅ **Input validation (3-100 characters for text)**
+- ⚠️ Services (TimerManager, StateSyncService, ValidationService) created but not yet integrated
+- ⚠️ Timer auto-submit functionality
 
 ### Frontend Components
-- ✅ GameListComponent (create game UI + **browse and join games**)
+- ✅ GameListComponent (create game UI + browse and join games)
 - ✅ LobbyComponent (wait for players, start game)
-- ✅ GameComponent (main game container)
-- ✅ **Game list display with real-time updates**
-- ✅ **Join game functionality**
-- ⚠️ InputPhaseComponent (needs implementation)
-- ⚠️ CanvasComponent (placeholder - needs HTML5 drawing)
-- ⚠️ DrawPhaseComponent (needs canvas + toolbar)
-- ⚠️ GuessPhaseComponent (needs implementation)
-- ⚠️ TransitionComponent (needs implementation)
+- ✅ GameComponent (main game container with phase switching)
+- ✅ Game list display with real-time updates
+- ✅ Join game functionality
+- ✅ **InputPhaseComponent (text input with validation and waiting state)**
+- ✅ **CanvasComponent (full HTML5 drawing with mouse/touch support)**
+- ✅ **DrawPhaseComponent (canvas + color picker + brush size + eraser + undo + clear)**
+- ✅ **GuessPhaseComponent (displays drawing + text input with validation)**
+- ✅ **TransitionComponent (waiting screen with spinner)**
+- ✅ **Phase advancement logic (waits for all players before advancing)**
+- ✅ **Room rotation (players move to next room after each phase)**
 - ⚠️ ResultsComponent (needs implementation)
 - ⚠️ Timer auto-submit integration
 - ⚠️ Error toast/snackbar notifications

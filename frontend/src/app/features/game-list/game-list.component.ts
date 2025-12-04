@@ -146,18 +146,24 @@ import { Game, GameState } from '@monday-painter/models';
     }
 
     button.secondary {
-      background: rgba(255, 255, 255, 0.2);
+      background: #667eea;
       color: white;
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      border: 2px solid #5568d3;
+      padding: 10px 20px;
+      font-weight: 600;
+      transition: all 0.2s;
     }
 
     button.secondary:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.3);
+      background: #5568d3;
+      transform: translateY(-1px);
     }
 
     button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+      background: #9ca3af;
+      border-color: #6b7280;
     }
   `]
 })

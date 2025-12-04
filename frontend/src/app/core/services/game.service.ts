@@ -62,6 +62,17 @@ export class GameService {
       }
     });
 
+    // Handle phase advanced
+    this.wsService.onMessage('phaseAdvanced').subscribe(message => {
+      const game = message.payload.game as Game;
+      this.currentGameSubject.next(game);
+      const currentPlayerId = this.getCurrentPlayerId();
+      if (currentPlayerId) {
+        this.saveGameState(game, currentPlayerId);
+      }
+      this.updateCurrentRoom(game);
+    });
+
     // Handle room state updates
     this.wsService.onMessage('roomStateUpdate').subscribe(message => {
       const room = message.payload.room as Room;
@@ -89,12 +100,22 @@ export class GameService {
   }
 
   private updateCurrentRoom(game: Game): void {
-    // Find the current player's room
-    // This would need the current player ID from PlayerService
-    // For now, just update with the first room if available
-    if (game.rooms && game.rooms.length > 0) {
-      this.currentRoomSubject.next(game.rooms[0]);
-      this.currentPhaseSubject.next(game.rooms[0].phase);
+    const currentPlayerId = this.getCurrentPlayerId();
+    if (!currentPlayerId || !game.rooms || game.rooms.length === 0) {
+      return;
+    }
+
+    // Find the player in the game
+    const player = game.players.find(p => p.id === currentPlayerId);
+    if (!player || !player.currentRoomId) {
+      return;
+    }
+
+    // Find the player's current room
+    const currentRoom = game.rooms.find(r => r.id === player.currentRoomId);
+    if (currentRoom) {
+      this.currentRoomSubject.next(currentRoom);
+      this.currentPhaseSubject.next(currentRoom.phase);
     }
   }
 

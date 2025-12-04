@@ -1,173 +1,166 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { GameService } from '../../core/services/game.service';
-import { Phase } from '@monday-painter/models';
+import { Phase, GameState } from '@monday-painter/models';
 
 @Component({
   selector: 'app-game',
   template: `
-    <div class="game-container">
+    <div class="game-container" *ngIf="game">
+      <!-- Header -->
       <div class="game-header">
-        <h2>Monday Painter</h2>
-        <app-timer [duration]="60"></app-timer>
+        <h1>{{ game.name || 'Monday Painter' }}</h1>
+        <div class="game-info">
+          <span class="phase-badge">{{ getPhaseLabel(currentPhase) }}</span>
+          <button class="leave-btn" (click)="leaveGame()">Leave Game</button>
+        </div>
       </div>
 
-      <div class="game-content">
-        <div *ngIf="currentPhase === Phase.INPUT" class="phase-container">
-          <h3>Write a Prompt</h3>
-          <p>Write something for the next player to draw</p>
-          <textarea 
-            [(ngModel)]="promptText" 
-            placeholder="Enter your prompt..."
-            maxlength="100">
-          </textarea>
-          <p class="char-count">{{ promptText.length }}/100</p>
-          <button class="primary" (click)="submitPrompt()">Submit</button>
-        </div>
+      <!-- Phase Content -->
+      <div class="phase-container">
+        <!-- Input Phase -->
+        <app-input-phase *ngIf="currentPhase === Phase.INPUT"></app-input-phase>
 
-        <div *ngIf="currentPhase === Phase.DRAW" class="phase-container">
-          <h3>Draw This</h3>
-          <p class="prompt-display">"{{ currentPrompt }}"</p>
-          <div class="canvas-placeholder">
-            <p>🎨 Canvas will go here</p>
-            <p style="font-size: 14px; color: #666;">Drawing functionality coming soon</p>
-          </div>
-          <button class="primary" (click)="submitDrawing()">Submit Drawing</button>
-        </div>
+        <!-- Draw Phase -->
+        <app-draw-phase *ngIf="currentPhase === Phase.DRAW"></app-draw-phase>
 
-        <div *ngIf="currentPhase === Phase.GUESS" class="phase-container">
-          <h3>What is this?</h3>
-          <div class="canvas-placeholder">
-            <p>🖼️ Drawing will be displayed here</p>
-          </div>
-          <input 
-            type="text" 
-            [(ngModel)]="guessText" 
-            placeholder="Enter your guess..."
-            maxlength="100">
-          <button class="primary" (click)="submitGuess()">Submit Guess</button>
-        </div>
+        <!-- Guess Phase -->
+        <app-guess-phase *ngIf="currentPhase === Phase.GUESS"></app-guess-phase>
 
-        <div *ngIf="!currentPhase" class="phase-container">
-          <p>Waiting for game to start...</p>
-        </div>
+        <!-- Transition/Waiting -->
+        <app-transition 
+          *ngIf="!currentPhase"
+          [message]="'Waiting for game to start...'"
+          [subMessage]="'The host will start the game soon'">
+        </app-transition>
       </div>
     </div>
   `,
   styles: [`
     .game-container {
-      max-width: 800px;
-      margin: 0 auto;
+      min-height: 100vh;
       padding: 20px;
     }
 
     .game-header {
+      max-width: 1200px;
+      margin: 0 auto 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-    }
-
-    .game-header h2 {
-      margin: 0;
-      color: #667eea;
-    }
-
-    .game-content {
-      background: white;
-      border-radius: 12px;
-      padding: 32px;
-    }
-
-    .phase-container {
-      display: flex;
-      flex-direction: column;
+      flex-wrap: wrap;
       gap: 16px;
     }
 
-    .phase-container h3 {
+    h1 {
+      color: white;
       margin: 0;
-      font-size: 24px;
-      color: #333;
+      font-size: 32px;
     }
 
-    .phase-container p {
-      margin: 0;
-      color: #666;
+    .game-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
-    .prompt-display {
-      font-size: 20px;
+    .phase-badge {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
       font-weight: 600;
-      color: #667eea;
-      padding: 16px;
-      background: #f3f4f6;
-      border-radius: 8px;
-      text-align: center;
-    }
-
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    .char-count {
-      text-align: right;
       font-size: 14px;
-      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
-    .canvas-placeholder {
-      background: #f9fafb;
-      border: 2px dashed #d1d5db;
-      border-radius: 8px;
-      padding: 60px 20px;
-      text-align: center;
-      color: #9ca3af;
+    .leave-btn {
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .leave-btn:hover {
+      background: rgba(220, 38, 38, 1);
+    }
+
+    .phase-container {
+      max-width: 1200px;
+      margin: 0 auto;
     }
   `]
 })
-export class GameComponent implements OnInit {
-  Phase = Phase;
+export class GameComponent implements OnInit, OnDestroy {
   currentPhase: Phase | null = null;
-  currentPrompt = 'Draw a happy cat';
-  promptText = '';
-  guessText = '';
+  game: any = null;
+  Phase = Phase; // Expose enum to template
+  private subscriptions: Subscription[] = [];
 
-  constructor(private gameService: GameService) {}
+  constructor(
+    private gameService: GameService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.gameService.currentPhase$.subscribe(phase => {
+    // Restore game state
+    this.gameService.restoreGameState();
+
+    // Subscribe to game state
+    const gameSub = this.gameService.game$.subscribe(game => {
+      this.game = game;
+      
+      // Navigate to results if game ended
+      if (game?.state === GameState.ENDED) {
+        this.router.navigate(['/results']);
+      }
+    });
+    this.subscriptions.push(gameSub);
+
+    // Subscribe to current phase
+    const phaseSub = this.gameService.currentPhase$.subscribe(phase => {
       this.currentPhase = phase;
     });
+    this.subscriptions.push(phaseSub);
+
+    // Redirect to home if no game
+    setTimeout(() => {
+      if (!this.game) {
+        this.router.navigate(['/']);
+      }
+    }, 1000);
   }
 
-  submitPrompt(): void {
-    if (this.promptText.trim().length >= 3) {
-      this.gameService.submitPrompt(this.promptText);
-      this.promptText = '';
-    } else {
-      alert('Prompt must be at least 3 characters');
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  getPhaseLabel(phase: Phase | null): string {
+    if (!phase) return 'Waiting';
+    
+    switch (phase) {
+      case Phase.INPUT:
+        return 'Write Prompt';
+      case Phase.DRAW:
+        return 'Draw';
+      case Phase.GUESS:
+        return 'Guess';
+      default:
+        return 'Playing';
     }
   }
 
-  submitDrawing(): void {
-    // Placeholder - would submit actual drawing data
-    this.gameService.submitDrawing({
-      strokes: [],
-      width: 800,
-      height: 600
-    });
-  }
-
-  submitGuess(): void {
-    if (this.guessText.trim().length >= 3) {
-      this.gameService.submitGuess(this.guessText);
-      this.guessText = '';
-    } else {
-      alert('Guess must be at least 3 characters');
+  leaveGame(): void {
+    if (confirm('Are you sure you want to leave the game?')) {
+      this.gameService.leaveGame();
+      this.router.navigate(['/']);
     }
   }
 }
