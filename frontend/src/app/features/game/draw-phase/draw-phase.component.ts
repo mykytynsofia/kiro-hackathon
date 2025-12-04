@@ -11,6 +11,13 @@ import { DrawingData } from '@monday-painter/models';
       <h2>Draw This!</h2>
       <p class="prompt">"{{ prompt }}"</p>
 
+      <!-- Timer -->
+      <app-timer 
+        *ngIf="phaseStartedAt && phaseDuration"
+        [phaseStartedAt]="phaseStartedAt"
+        [phaseDuration]="phaseDuration">
+      </app-timer>
+
       <!-- Drawing Canvas -->
       <div class="canvas-container">
         <app-canvas
@@ -233,20 +240,28 @@ export class DrawPhaseComponent implements OnInit, OnDestroy {
   submitted = false;
   brushSize = 3;
   colors = ['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFA500'];
+  phaseStartedAt: number = 0;
+  phaseDuration: number = 60; // DRAW_DURATION (varies by round)
   private subscriptions: Subscription[] = [];
 
   constructor(private gameService: GameService) {}
 
   ngOnInit(): void {
-    // Get current room to access the prompt
+    // Get current room to access the prompt and timer info
     const roomSub = this.gameService.currentRoom$.subscribe(room => {
-      if (room && room.chain.length > 0) {
-        // Get the last entry (should be a prompt or guess)
-        const lastEntry = room.chain[room.chain.length - 1];
-        if (lastEntry.type === 'prompt' && typeof lastEntry.content === 'string') {
-          this.prompt = lastEntry.content;
-        } else if (lastEntry.type === 'guess' && typeof lastEntry.content === 'string') {
-          this.prompt = lastEntry.content;
+      if (room) {
+        // Get timer info
+        this.phaseStartedAt = room.phaseStartedAt || Date.now();
+        this.phaseDuration = room.phaseDuration || 60;
+
+        // Get the prompt
+        if (room.chain.length > 0) {
+          const lastEntry = room.chain[room.chain.length - 1];
+          if (lastEntry.type === 'prompt' && typeof lastEntry.content === 'string') {
+            this.prompt = lastEntry.content;
+          } else if (lastEntry.type === 'guess' && typeof lastEntry.content === 'string') {
+            this.prompt = lastEntry.content;
+          }
         }
       }
     });

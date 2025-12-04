@@ -12,6 +12,13 @@ import { CanvasComponent } from '../../../shared/components/canvas/canvas.compon
       <h2>What was drawn?</h2>
       <p class="instruction">Look at the drawing and guess what it is!</p>
 
+      <!-- Timer -->
+      <app-timer 
+        *ngIf="phaseStartedAt && phaseDuration"
+        [phaseStartedAt]="phaseStartedAt"
+        [phaseDuration]="phaseDuration">
+      </app-timer>
+
       <!-- Drawing Display -->
       <div class="drawing-container">
         <app-canvas
@@ -181,22 +188,30 @@ export class GuessPhaseComponent implements OnInit, OnDestroy, AfterViewInit {
   
   submitted = false;
   drawingData: DrawingData | null = null;
+  phaseStartedAt: number = 0;
+  phaseDuration: number = 20; // GUESS_DURATION
   private subscriptions: Subscription[] = [];
 
   constructor(private gameService: GameService) {}
 
   ngOnInit(): void {
-    // Get current room to access the drawing
+    // Get current room to access the drawing and timer info
     const roomSub = this.gameService.currentRoom$.subscribe(room => {
-      if (room && room.chain.length > 0) {
-        // Get the last entry (should be a drawing)
-        const lastEntry = room.chain[room.chain.length - 1];
-        if (lastEntry.type === 'drawing' && lastEntry.content) {
-          this.drawingData = lastEntry.content as unknown as DrawingData;
-          
-          // If canvas is already initialized, load the drawing
-          if (this.canvasComponent) {
-            this.loadDrawingToCanvas();
+      if (room) {
+        // Get timer info
+        this.phaseStartedAt = room.phaseStartedAt || Date.now();
+        this.phaseDuration = room.phaseDuration || 20;
+
+        // Get the drawing
+        if (room.chain.length > 0) {
+          const lastEntry = room.chain[room.chain.length - 1];
+          if (lastEntry.type === 'drawing' && lastEntry.content) {
+            this.drawingData = lastEntry.content as unknown as DrawingData;
+            
+            // If canvas is already initialized, load the drawing
+            if (this.canvasComponent) {
+              this.loadDrawingToCanvas();
+            }
           }
         }
       }

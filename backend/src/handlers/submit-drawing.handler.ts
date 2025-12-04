@@ -1,5 +1,6 @@
 import { HandlerContext } from '../types';
 import { EntryType, Phase } from '@monday-painter/models';
+import { handleGuessPhaseExpiry } from './timer-expiry.handler';
 
 export async function handleSubmitDrawing(context: HandlerContext): Promise<void> {
   const { drawingData } = context.message.payload;
@@ -35,6 +36,9 @@ export async function handleSubmitDrawing(context: HandlerContext): Promise<void
 
   context.roomManager.addChainEntry(room, entry);
   
+  // Cancel timer for this room
+  context.timerManager.cancelTimer(room.id);
+  
   // Send confirmation to player
   const confirmMsg = JSON.stringify({
     type: 'drawingSubmitted',
@@ -65,9 +69,22 @@ export async function handleSubmitDrawing(context: HandlerContext): Promise<void
         nextRoom.currentPlayerId = player.id;
         nextRoom.phase = Phase.GUESS;
         nextRoom.phaseStartedAt = Date.now();
-        nextRoom.phaseDuration = 45; // GUESS_DURATION
+        nextRoom.phaseDuration = 20; // GUESS_DURATION
       }
     });
+
+    // Start timers for all rooms in GUESS phase
+    game.rooms.forEach(nextRoom => {
+      context.timerManager.startTimer(nextRoom.id, nextRoom.phaseDuration, async () => {
+        await handleGuessPhaseExpiry(game, nextRoom, {
+          gameManager: context.gameManager,
+          roomManager: context.roomManager,
+          broadcast: context.broadcast
+        });
+      });
+    });
+
+    console.log(`[TIMER] Started ${game.rooms.length} timers for GUESS phase (${game.rooms[0].phaseDuration}s)`);
 
     // Broadcast phase change to all players
     context.broadcast.toGame(game, {

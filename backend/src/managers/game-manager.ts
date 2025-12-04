@@ -105,7 +105,7 @@ export class GameManager {
       currentPlayerId: player.id,
       chain: [],
       phaseStartedAt: Date.now(),
-      phaseDuration: 60
+      phaseDuration: 20 // INPUT_DURATION
     }));
 
     // Assign players to initial rooms

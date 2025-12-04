@@ -5,7 +5,7 @@ import { HeartbeatService } from './websocket/heartbeat';
 import { GameManager } from './managers/game-manager';
 import { PlayerManager } from './managers/player-manager';
 import { RoomManager } from './managers/room-manager';
-// import { TimerManager } from './managers/timer-manager'; // TODO: Use in handlers
+import { TimerManager } from './managers/timer-manager';
 import { BroadcastService } from './services/broadcast.service';
 // import { StateSyncService } from './services/state-sync.service'; // TODO: Use in handlers
 // import { ValidationService } from './services/validation.service'; // TODO: Use in handlers
@@ -28,7 +28,7 @@ const connectionManager = new ConnectionManager();
 const gameManager = new GameManager();
 const playerManager = new PlayerManager();
 const roomManager = new RoomManager();
-// const timerManager = new TimerManager(); // TODO: Use in handlers
+const timerManager = new TimerManager();
 const broadcastService = new BroadcastService(connectionManager);
 // const stateSyncService = new StateSyncService(broadcastService, gameManager); // TODO: Use in handlers
 // const validationService = new ValidationService(); // TODO: Use in handlers
@@ -73,6 +73,7 @@ wss.on('connection', (ws) => {
         gameManager,
         playerManager,
         roomManager,
+        timerManager,
         broadcast: broadcastService
       };
 
@@ -106,6 +107,7 @@ wss.on('connection', (ws) => {
       gameManager,
       playerManager,
       roomManager,
+      timerManager,
       broadcast: broadcastService
     };
     

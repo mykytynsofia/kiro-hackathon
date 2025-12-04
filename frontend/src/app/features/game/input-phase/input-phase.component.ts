@@ -10,6 +10,13 @@ import { GameService } from '../../../core/services/game.service';
       <h2>Write a Prompt</h2>
       <p class="instruction">Write something for the next player to draw!</p>
 
+      <!-- Timer -->
+      <app-timer 
+        *ngIf="phaseStartedAt && phaseDuration"
+        [phaseStartedAt]="phaseStartedAt"
+        [phaseDuration]="phaseDuration">
+      </app-timer>
+
       <div class="form-container">
         <textarea
           [formControl]="promptControl"
@@ -156,11 +163,22 @@ export class InputPhaseComponent implements OnInit, OnDestroy {
   ]);
   
   submitted = false;
+  phaseStartedAt: number = 0;
+  phaseDuration: number = 20; // INPUT_DURATION
   private subscriptions: Subscription[] = [];
 
   constructor(private gameService: GameService) {}
 
   ngOnInit(): void {
+    // Get current room to access timer info
+    const roomSub = this.gameService.currentRoom$.subscribe(room => {
+      if (room) {
+        this.phaseStartedAt = room.phaseStartedAt || Date.now();
+        this.phaseDuration = room.phaseDuration || 20;
+      }
+    });
+    this.subscriptions.push(roomSub);
+
     // Listen for phase changes (in case we already submitted)
     const phaseSub = this.gameService.currentPhase$.subscribe(phase => {
       // If phase changes away from input, we're done

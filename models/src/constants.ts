@@ -7,9 +7,9 @@ export const MIN_PLAYERS = 3;
 export const MAX_PLAYERS = 10;
 
 // Phase durations (in seconds)
-export const INPUT_DURATION = 60;
-export const DRAW_DURATION = 90;
-export const GUESS_DURATION = 45;
+export const INPUT_DURATION = 20;  // Time to write prompt/guess
+export const DRAW_DURATION = 60;   // Time to draw
+export const GUESS_DURATION = 20;  // Time to guess
 
 // Text length limits
 export const MIN_TEXT_LENGTH = 3;

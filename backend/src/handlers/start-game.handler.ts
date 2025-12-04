@@ -1,4 +1,5 @@
 import { HandlerContext } from '../types';
+import { handleInputPhaseExpiry } from './timer-expiry.handler';
 
 export async function handleStartGame(context: HandlerContext): Promise<void> {
   const game = context.gameManager.getGame(context.connection.gameId!);
@@ -21,6 +22,19 @@ export async function handleStartGame(context: HandlerContext): Promise<void> {
 
   try {
     context.gameManager.startGame(game.id);
+
+    // Start timers for all rooms (they all start in INPUT phase)
+    game.rooms.forEach(room => {
+      context.timerManager.startTimer(room.id, room.phaseDuration, async () => {
+        await handleInputPhaseExpiry(game, room, {
+          gameManager: context.gameManager,
+          roomManager: context.roomManager,
+          broadcast: context.broadcast
+        });
+      });
+    });
+
+    console.log(`[TIMER] Started ${game.rooms.length} timers for INPUT phase (${game.rooms[0].phaseDuration}s)`);
 
     context.broadcast.toGame(game, {
       type: 'gameStarted',

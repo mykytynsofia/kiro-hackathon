@@ -41,6 +41,7 @@
 - ✅ **Modular Architecture** - Managers, services, handlers
 - ✅ **Shared Models** - Single source of truth
 - ✅ **Build System** - Both backend and frontend compile
+- ✅ **Timer UI** - Visual countdown with green progress bar
 
 ---
 
@@ -49,20 +50,29 @@
 ### High Priority (Core Functionality)
 
 #### 1. Timer Auto-Submit ⏱️
-**Status**: Not implemented
+**Status**: ✅ COMPLETED
 **Description**: When phase timer runs out, auto-submit for players who haven't submitted
 **Impact**: Medium - Game can get stuck if players don't submit
-**Files to modify**:
-- `backend/src/managers/timer-manager.ts` (integrate into handlers)
-- `backend/src/handlers/submit-*.handler.ts` (add timer checks)
+**Files modified**:
+- `backend/src/handlers/timer-expiry.handler.ts` (NEW - timer expiry logic)
+- `backend/src/handlers/start-game.handler.ts` (start timers)
+- `backend/src/handlers/submit-*.handler.ts` (cancel/start timers)
+- `backend/src/types/handler-context.ts` (added timerManager)
+- `backend/src/server.ts` (integrated timerManager)
+- `models/src/constants.ts` (updated durations: INPUT=20s, DRAW=60s, GUESS=20s)
 
 **Implementation**:
-```typescript
-// When timer expires:
-- Check which players haven't submitted
-- Auto-submit for them (like disconnect handler)
-- Advance to next phase
-```
+- Input phase: 20 seconds → auto-submit "[Time expired - no prompt submitted]"
+- Draw phase: Decreasing timer (60s → 50s → 40s → 30s → 20s minimum) → auto-submit empty canvas
+- Guess phase: 20 seconds → auto-submit "[Time expired - no guess submitted]"
+- Timers start when phase begins
+- Timers cancel when player submits
+- Game advances when all submitted (including auto-submits)
+- Each player sees each room exactly once (proper rotation)
+- Draw timer decreases by 10s each round to speed up gameplay
+- Visual countdown timer with green progress bar (depletes left to right)
+- Timer changes color: green → orange (40%) → red (20%)
+- Timer pulses when critical (< 20% remaining)
 
 #### 2. Error Notifications 🚨
 **Status**: Not implemented
@@ -155,10 +165,11 @@
 
 ### Option A: Polish Current Features (Recommended)
 1. ✅ Test the game end-to-end
-2. ⚠️ Implement timer auto-submit
-3. ⚠️ Add error notifications
-4. ⚠️ Add loading states
-5. ✅ Deploy and play with friends!
+2. ✅ Implement timer auto-submit
+3. ✅ Add visual timer countdown
+4. ⚠️ Add error notifications
+5. ⚠️ Add loading states
+6. ✅ Deploy and play with friends!
 
 ### Option B: Add Advanced Features
 1. ⚠️ Implement chat system
@@ -190,16 +201,17 @@ All major issues have been fixed:
 
 ## 📊 COMPLETION STATUS
 
-### Core Game: 95% ✅
+### Core Game: 100% ✅
 - Game flow: ✅ 100%
 - Disconnect handling: ✅ 100%
-- UI/UX: ✅ 95%
+- UI/UX: ✅ 100%
 - Network play: ✅ 100%
+- Timers: ✅ 100%
 
-### Polish: 40% ⚠️
+### Polish: 75% ⚠️
 - Error handling: ⚠️ 50%
 - Loading states: ⚠️ 30%
-- Timers: ❌ 0%
+- Visual feedback: ✅ 100%
 - Sounds: ❌ 0%
 
 ### Advanced Features: 0% ❌
@@ -208,7 +220,7 @@ All major issues have been fixed:
 - History: ❌ 0%
 - Spectator: ❌ 0%
 
-### Overall: 75% Complete 🎉
+### Overall: 87% Complete 🎉
 
 ---
 
@@ -239,9 +251,9 @@ All major issues have been fixed:
 - ✅ UI looks beautiful
 - ✅ Network play works well
 - ✅ Canvas drawing is smooth
+- ✅ Timer system with visual feedback
 
 ### What Could Be Better:
-- ⚠️ No timer auto-submit (players can stall)
 - ⚠️ No error notifications (silent failures)
 - ⚠️ No loading indicators (feels unresponsive)
 - ⚠️ No sounds (less engaging)
@@ -270,6 +282,6 @@ The remaining TODOs are **polish and enhancements**, not blockers.
 
 ---
 
-**Last Updated**: After disconnect handling fixes
-**Status**: ✅ Fully Playable
-**Next Priority**: Timer auto-submit or error notifications
+**Last Updated**: December 4, 2025 - After visual timer UI implementation
+**Status**: ✅ Fully Playable with Visual Timers
+**Next Priority**: Error notifications or sound effects

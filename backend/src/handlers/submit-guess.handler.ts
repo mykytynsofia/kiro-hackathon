@@ -1,5 +1,6 @@
 import { HandlerContext } from '../types';
 import { EntryType, Phase } from '@monday-painter/models';
+import { handleDrawPhaseExpiry } from './timer-expiry.handler';
 
 export async function handleSubmitGuess(context: HandlerContext): Promise<void> {
   const { guess } = context.message.payload;
@@ -44,6 +45,9 @@ export async function handleSubmitGuess(context: HandlerContext): Promise<void> 
   };
 
   context.roomManager.addChainEntry(room, entry);
+
+  // Cancel timer for this room
+  context.timerManager.cancelTimer(room.id);
 
   // Send confirmation to player
   const confirmMsg = JSON.stringify({
@@ -92,9 +96,27 @@ export async function handleSubmitGuess(context: HandlerContext): Promise<void> 
           nextRoom.currentPlayerId = player.id;
           nextRoom.phase = Phase.DRAW;
           nextRoom.phaseStartedAt = Date.now();
-          nextRoom.phaseDuration = 90; // DRAW_DURATION
+          
+          // Calculate draw duration: start at 60s, decrease by 10s each round, minimum 20s
+          // Count how many entries are already in the chain to determine round number
+          const roundNumber = Math.floor(nextRoom.chain.length / 2); // 0, 1, 2, 3...
+          const drawDuration = Math.max(20, 60 - (roundNumber * 10));
+          nextRoom.phaseDuration = drawDuration;
         }
       });
+
+      // Start timers for all rooms in DRAW phase
+      game.rooms.forEach(nextRoom => {
+        context.timerManager.startTimer(nextRoom.id, nextRoom.phaseDuration, async () => {
+          await handleDrawPhaseExpiry(game, nextRoom, {
+            gameManager: context.gameManager,
+            roomManager: context.roomManager,
+            broadcast: context.broadcast
+          });
+        });
+      });
+
+      console.log(`[TIMER] Started ${game.rooms.length} timers for DRAW phase (durations vary by round)`);
 
       // Broadcast phase change to all players
       context.broadcast.toGame(game, {
