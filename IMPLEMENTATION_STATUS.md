@@ -2,6 +2,14 @@
 
 ## ✅ COMPLETED
 
+### Network Configuration
+- ✅ Frontend configured to bind to all network interfaces (0.0.0.0)
+- ✅ WebSocket URL dynamically uses window.location.hostname
+- ✅ Network setup documentation (NETWORK_SETUP.md)
+- ✅ Helper scripts for network play (GET_NETWORK_INFO.bat, START_NETWORK_GAME.bat)
+- ✅ Firewall configuration instructions
+- ✅ Automatic IP detection and display
+
 ### Models Package (`models/`)
 - ✅ Project setup with TypeScript
 - ✅ Core type definitions (Game, Player, Room, ChainEntry, DrawingData, Stroke)
