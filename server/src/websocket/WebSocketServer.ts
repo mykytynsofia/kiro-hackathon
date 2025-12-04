@@ -161,6 +161,35 @@ export class WebSocketServer {
 
     console.log(`Player ${playerName} (${playerId}) joined room ${roomId}`);
 
+    // If game is already in progress, send current game state to the new player
+    if (room.hasStarted && room.activeDrawerId) {
+      // Send current round info
+      this.sendToConnection(connectionId, {
+        type: 'round_start',
+        roundNumber: room.currentRound,
+        isDrawer: false,
+        drawerId: room.activeDrawerId,
+        timestamp: Date.now()
+      });
+
+      // Send drawing history to catch up
+      const drawingHistory = room.getDrawingHistory();
+      for (const stroke of drawingHistory) {
+        this.sendToConnection(connectionId, {
+          type: 'drawing_event',
+          stroke: stroke,
+          timestamp: Date.now()
+        });
+      }
+
+      // Send current scores
+      this.sendToConnection(connectionId, {
+        type: 'score_update',
+        scores: room.getScoreboard(),
+        timestamp: Date.now()
+      });
+    }
+
     // Check if game should start
     if (!room.hasStarted && room.hasMinimumPlayers()) {
       room.hasStarted = true;
@@ -180,6 +209,9 @@ export class WebSocketServer {
       this.sendError(connectionId, 'Only the active drawer can draw');
       return;
     }
+
+    // Store the stroke in room history
+    room.addDrawingStroke(message.stroke);
 
     // Broadcast drawing event to all players except the drawer
     this.broadcastToRoom(conn.roomId, {
@@ -221,6 +253,9 @@ export class WebSocketServer {
     if (room.activeDrawerId !== conn.playerId) {
       return;
     }
+
+    // Clear drawing history
+    room.drawingHistory = [];
 
     // Broadcast clear canvas to all players except the drawer
     this.broadcastToRoom(conn.roomId, {
@@ -285,9 +320,12 @@ export class WebSocketServer {
   private startRound(room: any): void {
     room.startRound();
 
+    console.log(`Round ${room.currentRound} started in room ${room.id}. Drawer: ${room.activeDrawerId}, Prompt: ${room.currentPrompt}`);
+
     // Send round_start to drawer with prompt
     const drawerConnectionId = this.getConnectionIdByPlayerId(room.id, room.activeDrawerId);
     if (drawerConnectionId) {
+      console.log(`Sending prompt to drawer ${room.activeDrawerId}`);
       this.sendToConnection(drawerConnectionId, {
         type: 'round_start',
         roundNumber: room.currentRound,
@@ -296,6 +334,8 @@ export class WebSocketServer {
         drawerId: room.activeDrawerId,
         timestamp: Date.now()
       });
+    } else {
+      console.error(`Could not find connection for drawer ${room.activeDrawerId}`);
     }
 
     // Send round_start to guessers without prompt
@@ -312,23 +352,37 @@ export class WebSocketServer {
   }
 
   private endRound(room: any): void {
+    const roomId = room.id;
+    const currentPrompt = room.currentPrompt;
+    
     room.endRound();
 
     // Broadcast round_end
-    this.broadcastToRoom(room.id, {
+    this.broadcastToRoom(roomId, {
       type: 'round_end',
-      prompt: room.currentPrompt || '',
+      prompt: currentPrompt || '',
       scores: room.getScoreboard(),
       timestamp: Date.now()
     });
 
+    console.log(`Round ${room.currentRound} ended in room ${roomId}. Starting intermission...`);
+
     // Start intermission timer and then next round
     setTimeout(() => {
-      if (room.currentRound < this.config.totalRounds) {
-        this.startRound(room);
+      // Get fresh room reference in case it changed
+      const freshRoom = this.roomManager.getRoom(roomId);
+      if (!freshRoom) {
+        console.log(`Room ${roomId} no longer exists`);
+        return;
+      }
+
+      if (freshRoom.currentRound < this.config.totalRounds) {
+        console.log(`Starting round ${freshRoom.currentRound + 1} in room ${roomId}`);
+        this.startRound(freshRoom);
       } else {
         // Game end
-        this.broadcastToRoom(room.id, {
+        console.log(`Game ended in room ${roomId}`);
+        this.broadcastToRoom(roomId, {
           type: 'game_end',
           finalRankings: [], // TODO: Calculate rankings
           timestamp: Date.now()

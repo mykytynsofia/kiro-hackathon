@@ -9,6 +9,7 @@ export class GameRoom {
   public currentPrompt: string | null;
   public scores: Map<string, number>;
   public hasStarted: boolean;
+  public drawingHistory: any[] = [];
   private drawerHistory: string[];
   private usedPrompts: Set<string>;
   private correctGuessers: Set<string>;
@@ -98,6 +99,7 @@ export class GameRoom {
     this.activeDrawerId = this.selectNextDrawer();
     this.currentPrompt = this.selectPrompt();
     this.correctGuessers.clear();
+    this.drawingHistory = []; // Clear drawing history for new round
   }
 
   endRound(): void {
@@ -149,5 +151,13 @@ export class GameRoom {
   updateScore(playerId: string, points: number): void {
     const currentScore = this.scores.get(playerId) || 0;
     this.scores.set(playerId, currentScore + points);
+  }
+
+  addDrawingStroke(stroke: any): void {
+    this.drawingHistory.push(stroke);
+  }
+
+  getDrawingHistory(): any[] {
+    return this.drawingHistory;
   }
 }
