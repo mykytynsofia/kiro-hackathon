@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Monday Painter backend is a Node.js/TypeScript server that implements the game logic for the multiplayer drawing game. It uses the `ws` library for WebSocket connections and imports shared data models from the monday-painter-models package. The architecture separates concerns into managers (game, room, player, timer) and message handlers, enabling clean separation of business logic and communication.
+The Monday Painter backend is a Node.js/TypeScript server that implements the game logic for the multiplayer drawing game. It uses the `ws` library for WebSocket connections and imports shared data models from the monday-painter-models package. All game data (games, players, rooms, connections) is stored in-memory using Maps and arrays - there is no database persistence. The architecture separates concerns into managers (game, room, player, timer) and message handlers, enabling clean separation of business logic and communication.
 
 ## Architecture
 
@@ -79,11 +79,11 @@ interface MessageHandler {
 
 ### Connection Manager
 
-Manages WebSocket connections and player associations:
+Manages WebSocket connections and player associations in-memory:
 
 ```typescript
 class ConnectionManager {
-  private connections: Map<string, Connection>;
+  private connections: Map<string, Connection>; // In-memory storage
   
   addConnection(ws: WebSocket): Connection;
   removeConnection(connectionId: string): void;
@@ -96,21 +96,21 @@ class ConnectionManager {
 
 ### Game Manager
 
-Manages game lifecycle and state:
+Manages game lifecycle and state in-memory:
 
 ```typescript
 class GameManager {
-  private games: Map<string, Game>;
+  private games: Map<string, Game>; // In-memory storage
   
   createGame(hostId: string, options: Partial<Game>): Game;
   getGame(gameId: string): Game | undefined;
   getAllGames(): Game[];
-  getActiveGames(): Game[];
+  getActiveGames(): Game[]; // Returns games in lobby state
   addPlayerToGame(gameId: string, player: Player): void;
   removePlayerFromGame(gameId: string, playerId: string): void;
   startGame(gameId: string): void;
   endGame(gameId: string): void;
-  deleteGame(gameId: string): void;
+  deleteGame(gameId: string): void; // Removes from memory
 }
 ```
 
