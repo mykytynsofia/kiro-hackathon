@@ -1,6 +1,8 @@
 # Implementation Plan
 
-- [ ] 1. Set up Node.js/TypeScript project
+- [x] 1. Set up Node.js/TypeScript project
+
+
   - Initialize npm project with TypeScript
   - Install dependencies (ws, uuid, shared models package)
   - Configure tsconfig.json for Node.js
@@ -8,10 +10,15 @@
   - Configure build and start scripts
   - _Requirements: All_
 
+
+
+
 - [ ] 2. Implement core types and interfaces
   - Create Connection interface
   - Create Message interface
   - Create HandlerContext interface
+
+
   - Create MessageHandler type
   - Export all types from types/index.ts
   - _Requirements: 14.1-14.5, 15.1-15.5_
@@ -19,19 +26,25 @@
 - [ ] 3. Implement ConnectionManager
   - Create ConnectionManager class with Map storage
   - Implement addConnection method
+
+
   - Implement removeConnection method
   - Implement getConnection and getConnectionByPlayerId methods
   - Implement associatePlayer method
   - Implement getAllConnections method
   - _Requirements: 15.1-15.5_
 
-- [ ] 4. Implement WebSocket server and message router
+- [x] 4. Implement WebSocket server and message router
+
+
   - Create WebSocket server with ws library
   - Implement connection event handler
   - Implement message event handler with JSON parsing
   - Create MessageRouter to dispatch messages to handlers
   - Implement error handling for invalid JSON
   - Implement close event handler
+
+
   - _Requirements: 14.1-14.5, 15.1-15.5_
 
 - [ ] 5. Implement heartbeat mechanism
@@ -42,12 +55,16 @@
   - Close stale connections and clean up
   - _Requirements: 15.4, 15.5_
 
+
+
 - [ ] 6. Implement GameManager
   - Create GameManager class with Map storage
   - Implement createGame method with UUID generation
   - Implement getGame, getAllGames, getActiveGames methods
   - Implement addPlayerToGame with validation
   - Implement removePlayerFromGame method
+
+
   - Implement startGame with room creation logic
   - Implement endGame method
   - Implement deleteGame method
@@ -56,13 +73,17 @@
 - [ ] 7. Implement PlayerManager
   - Create PlayerManager class
   - Implement createPlayer method with UUID generation
+
+
   - Implement getPlayer method
   - Implement updatePlayerRoom method
   - Implement markPlayerDisconnected method
   - Implement getConnectedPlayers method
   - _Requirements: 2.1-2.5, 10.1-10.6, 15.1-15.5_
 
-- [ ] 8. Implement RoomManager
+- [x] 8. Implement RoomManager
+
+
   - Create RoomManager class
   - Implement advancePhase method with phase logic (input→draw→guess→draw...)
   - Implement addChainEntry method
@@ -70,6 +91,8 @@
   - Implement getNextRoomIndex method ((current + 1) % total)
   - Implement assignPlayerToRoom method
   - Implement checkGameComplete method (all players visited all rooms)
+
+
   - _Requirements: 4.1-4.7, 5.1-5.7, 6.1-6.7, 8.1-8.5_
 
 - [ ] 9. Implement TimerManager
@@ -77,6 +100,8 @@
   - Implement startTimer method with setTimeout
   - Implement cancelTimer method with clearTimeout
   - Implement cancelAllTimers method for a game
+
+
   - Implement getRemainingTime method
   - Handle timer expiry callbacks
   - _Requirements: 7.1-7.6_
@@ -85,6 +110,8 @@
   - Create BroadcastService class
   - Implement toGame method (send to all players in game)
   - Implement toPlayer method (send to specific player)
+
+
   - Implement toAllConnections method (send to everyone)
   - Implement toGameExcept method (send to game except one player)
   - Handle serialization of messages to JSON
@@ -148,12 +175,16 @@
     - Validate player is in room in draw phase
     - Validate drawing data structure
     - Create ChainEntry with type drawing
+
+
     - Add entry to room chain
     - Advance room to guess phase
     - Assign next player to room
     - Start new phase timer
     - Broadcast phase change
     - _Requirements: 5.1-5.7_
+
+
   - [ ] 13.6 Implement handleSubmitGuess
     - Validate player is in room in guess phase
     - Validate guess length (3-100 characters)
@@ -161,6 +192,7 @@
     - Add entry to room chain
     - Check if game is complete
     - If complete, end game; otherwise advance to draw phase
+
     - Assign next player to room
     - Start new phase timer
     - Broadcast phase change or game ended
@@ -170,6 +202,8 @@
     - If in lobby, remove player and broadcast updated list
     - If host leaves lobby, assign new host
     - If in active game, mark player as disconnected
+
+
     - If all players leave, delete game after timeout
     - Send success response
     - _Requirements: 10.1-10.6_
