@@ -8,7 +8,6 @@ import { GameMessage, DrawingStroke, Guess } from '../../models/types';
 import { CanvasComponent } from '../canvas/canvas.component';
 import { PlayerListComponent } from '../player-list/player-list.component';
 import { ScoreboardComponent } from '../scoreboard/scoreboard.component';
-import { TimerComponent } from '../timer/timer.component';
 import { GuessFeedComponent } from '../guess-feed/guess-feed.component';
 import { GuessInputComponent } from '../guess-input/guess-input.component';
 
@@ -20,7 +19,6 @@ import { GuessInputComponent } from '../guess-input/guess-input.component';
     CanvasComponent,
     PlayerListComponent,
     ScoreboardComponent,
-    TimerComponent,
     GuessFeedComponent,
     GuessInputComponent
   ],
@@ -36,7 +34,6 @@ export class GameComponent implements OnInit, OnDestroy {
   // Observable streams
   players$ = this.gameState.players$;
   scores$ = this.gameState.scores$;
-  timeRemaining$ = this.gameState.timeRemaining$;
   currentPrompt$ = this.gameState.currentPrompt$;
   guesses$ = this.gameState.guesses$;
   isDrawer$ = this.gameState.isDrawer$;
@@ -147,10 +144,6 @@ export class GameComponent implements OnInit, OnDestroy {
 
       case 'score_update':
         this.gameState.updateScores(message.scores);
-        break;
-
-      case 'timer_update':
-        this.gameState.updateTimer(message.timeRemaining);
         break;
 
       case 'round_end':

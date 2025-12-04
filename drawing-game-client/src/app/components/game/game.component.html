@@ -55,10 +55,8 @@
 
     <!-- Center Area -->
     <div class="flex-1 flex flex-col gap-4 min-w-0">
-      <!-- Timer & Prompt -->
+      <!-- Prompt -->
       <div class="flex gap-4 flex-shrink-0">
-        <app-timer [timeRemaining]="(timeRemaining$ | async) || 0"></app-timer>
-        
         <div class="flex-1" *ngIf="(isDrawer$ | async)">
           <div class="h-full bg-gradient-to-r from-[#5D3FD3] to-[#7B2CBF] rounded-xl p-4 flex items-center justify-center shadow-lg border-2 border-[#FFD700]">
             <div class="text-center">
@@ -76,12 +74,13 @@
       </div>
 
       <!-- Canvas -->
-      <div class="flex-1 min-h-0">
+      <div class="flex-1 min-h-0 flex flex-col">
         <app-canvas
           [isDrawer]="(isDrawer$ | async) || false"
           (strokeDrawn)="onStrokeDrawn($event)"
           (toolChanged)="onToolChanged($event)"
           (canvasCleared)="onCanvasCleared()"
+          class="h-full"
         ></app-canvas>
       </div>
     </div>

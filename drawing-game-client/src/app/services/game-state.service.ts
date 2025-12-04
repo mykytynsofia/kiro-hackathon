@@ -8,7 +8,6 @@ import { Player, Guess, Scoreboard } from '../models/types';
 export class GameStateService {
   private playersSubject = new BehaviorSubject<Player[]>([]);
   private scoresSubject = new BehaviorSubject<Scoreboard>({});
-  private timeRemainingSubject = new BehaviorSubject<number>(0);
   private currentPromptSubject = new BehaviorSubject<string | null>(null);
   private guessesSubject = new BehaviorSubject<Guess[]>([]);
   private isDrawerSubject = new BehaviorSubject<boolean>(false);
@@ -17,7 +16,6 @@ export class GameStateService {
 
   public players$: Observable<Player[]> = this.playersSubject.asObservable();
   public scores$: Observable<Scoreboard> = this.scoresSubject.asObservable();
-  public timeRemaining$: Observable<number> = this.timeRemainingSubject.asObservable();
   public currentPrompt$: Observable<string | null> = this.currentPromptSubject.asObservable();
   public guesses$: Observable<Guess[]> = this.guessesSubject.asObservable();
   public isDrawer$: Observable<boolean> = this.isDrawerSubject.asObservable();
@@ -30,10 +28,6 @@ export class GameStateService {
 
   updateScores(scores: Scoreboard): void {
     this.scoresSubject.next(scores);
-  }
-
-  updateTimer(timeRemaining: number): void {
-    this.timeRemainingSubject.next(timeRemaining);
   }
 
   setPrompt(prompt: string | null): void {
@@ -64,7 +58,6 @@ export class GameStateService {
   reset(): void {
     this.playersSubject.next([]);
     this.scoresSubject.next({});
-    this.timeRemainingSubject.next(0);
     this.currentPromptSubject.next(null);
     this.guessesSubject.next([]);
     this.isDrawerSubject.next(false);

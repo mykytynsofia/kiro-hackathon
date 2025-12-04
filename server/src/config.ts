@@ -7,26 +7,27 @@ export const defaultGameConfig: GameConfig = {
   intermissionDuration: 5, // seconds
   totalRounds: 3,
   prompts: [
-    // Animals
-    'cat', 'dog', 'elephant', 'giraffe', 'penguin', 'butterfly', 'octopus', 'dolphin',
-    'tiger', 'lion', 'bear', 'rabbit', 'snake', 'turtle', 'fish', 'bird',
+    // Halloween Characters
+    'skeleton', 'zombie', 'ghost', 'vampire', 'witch', 'mummy', 'werewolf', 'frankenstein',
+    'bat', 'black cat', 'spider', 'scarecrow', 'grim reaper', 'demon', 'monster',
     
-    // Objects
-    'house', 'car', 'bicycle', 'tree', 'flower', 'sun', 'moon', 'star',
-    'umbrella', 'chair', 'table', 'lamp', 'book', 'phone', 'computer', 'camera',
+    // Halloween Objects
+    'pumpkin', 'jack-o-lantern', 'cauldron', 'broomstick', 'tombstone', 'coffin', 'haunted house',
+    'witch hat', 'magic wand', 'crystal ball', 'potion', 'spell book', 'candle', 'skull',
     
-    // Food
-    'pizza', 'hamburger', 'ice cream', 'cake', 'apple', 'banana', 'watermelon', 'carrot',
-    'bread', 'cheese', 'egg', 'coffee', 'tea', 'cookie', 'donut', 'sandwich',
+    // Halloween Treats
+    'candy corn', 'lollipop', 'chocolate bar', 'candy apple', 'trick or treat bag', 'cupcake',
     
-    // Activities
-    'running', 'swimming', 'dancing', 'sleeping', 'reading', 'writing', 'cooking', 'singing',
+    // Spooky Things
+    'cobweb', 'full moon', 'graveyard', 'fog', 'lightning', 'haunted tree', 'creepy eyes',
+    'bones', 'fangs', 'claws', 'shadow', 'darkness',
     
-    // Nature
-    'mountain', 'ocean', 'river', 'cloud', 'rainbow', 'lightning', 'snowflake', 'leaf',
+    // Halloween Activities
+    'trick or treat', 'carving pumpkin', 'flying on broomstick', 'casting spell', 'haunting',
     
-    // Misc
-    'heart', 'smile', 'glasses', 'hat', 'shoe', 'key', 'clock', 'balloon'
+    // General (Easy to Draw)
+    'cat', 'dog', 'tree', 'flower', 'sun', 'moon', 'star', 'heart', 'smile',
+    'house', 'car', 'umbrella', 'book', 'key', 'clock', 'balloon', 'crown'
   ]
 };
 

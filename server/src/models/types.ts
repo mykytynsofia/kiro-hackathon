@@ -125,11 +125,6 @@ export interface ScoreUpdateMessage extends BaseMessage {
   scores: Scoreboard;
 }
 
-export interface TimerUpdateMessage extends BaseMessage {
-  type: 'timer_update';
-  timeRemaining: number;
-}
-
 export interface RoundEndMessage extends BaseMessage {
   type: 'round_end';
   prompt: string;
@@ -156,7 +151,6 @@ export type GameMessage =
   | GuessMessage
   | GuessResultMessage
   | ScoreUpdateMessage
-  | TimerUpdateMessage
   | RoundEndMessage
   | GameEndMessage
   | ErrorMessage;
