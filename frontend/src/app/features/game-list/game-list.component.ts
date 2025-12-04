@@ -79,18 +79,36 @@ import { Game, GameState } from '@monday-painter/models';
 
     .header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 48px;
       color: white;
     }
 
     .header h1 {
-      font-size: 48px;
-      margin-bottom: 8px;
+      font-size: 56px;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #FFD700 0%, #FF8C00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+      font-weight: 800;
     }
 
     .header p {
-      font-size: 20px;
-      opacity: 0.9;
+      font-size: 22px;
+      color: rgba(255, 255, 255, 0.9);
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .card {
+      margin-bottom: 24px;
+    }
+
+    .card h2 {
+      margin-bottom: 20px;
+      color: #FFD700;
+      font-size: 24px;
+      text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
     }
 
     .form {
@@ -109,10 +127,18 @@ import { Game, GameState } from '@monday-painter/models';
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      background: rgba(93, 63, 211, 0.1);
+      border-radius: 12px;
+      border: 2px solid rgba(93, 63, 211, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .game-item:hover {
+      background: rgba(93, 63, 211, 0.2);
+      border-color: rgba(93, 63, 211, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(93, 63, 211, 0.3);
     }
 
     .game-info {
@@ -120,10 +146,11 @@ import { Game, GameState } from '@monday-painter/models';
     }
 
     .game-name {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: white;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #FFD700;
+      text-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
     }
 
     .game-details {
@@ -133,37 +160,32 @@ import { Game, GameState } from '@monday-painter/models';
 
     .no-games {
       text-align: center;
-      color: rgba(255, 255, 255, 0.7);
+      color: rgba(255, 255, 255, 0.6);
       margin: 0;
+      font-size: 16px;
     }
 
     .status {
-      margin-top: 20px;
-      padding: 12px;
-      background: white;
-      border-radius: 8px;
+      margin-top: 24px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
       text-align: center;
+      color: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
     }
 
     button.secondary {
-      background: #667eea;
-      color: white;
-      border: 2px solid #5568d3;
       padding: 10px 20px;
       font-weight: 600;
-      transition: all 0.2s;
-    }
-
-    button.secondary:hover:not(:disabled) {
-      background: #5568d3;
-      transform: translateY(-1px);
+      transition: all 0.3s;
+      min-width: 80px;
     }
 
     button:disabled {
-      opacity: 0.5;
+      opacity: 0.4;
       cursor: not-allowed;
-      background: #9ca3af;
-      border-color: #6b7280;
     }
   `]
 })

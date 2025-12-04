@@ -74,50 +74,63 @@ import { CanvasComponent } from '../../../shared/components/canvas/canvas.compon
     }
 
     .drawing-container {
-      background: white;
-      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 16px;
       padding: 20px;
       margin-bottom: 24px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .form-container {
-      background: white;
+      background: rgba(255, 255, 255, 0.05);
       padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     input {
       width: 100%;
-      padding: 12px;
-      border: 2px solid #e5e7eb;
-      border-radius: 8px;
+      padding: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
       font-size: 16px;
       font-family: inherit;
-      transition: border-color 0.2s;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+      backdrop-filter: blur(10px);
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
     }
 
     input:focus {
       outline: none;
-      border-color: #3b82f6;
+      border-color: var(--halloween-purple);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 20px rgba(93, 63, 211, 0.3);
     }
 
     input:disabled {
-      background: #f3f4f6;
+      background: rgba(255, 255, 255, 0.02);
       cursor: not-allowed;
+      opacity: 0.6;
     }
 
     .char-count {
       text-align: right;
       font-size: 14px;
-      color: #6b7280;
+      color: rgba(255, 255, 255, 0.7);
       margin-top: 8px;
       margin-bottom: 16px;
     }
 
     .char-count.warning {
-      color: #f59e0b;
+      color: #FFA500;
     }
 
     .min-warning {

@@ -17,6 +17,7 @@ import { handleSubmitDrawing } from './handlers/submit-drawing.handler';
 import { handleSubmitGuess } from './handlers/submit-guess.handler';
 import { handleLeaveGame } from './handlers/leave-game.handler';
 import { handleGetGameList } from './handlers/get-game-list.handler';
+import { handleDisconnect } from './handlers/disconnect.handler';
 import { Logger } from './utils/logger';
 import { Metrics } from './utils/metrics';
 
@@ -94,8 +95,22 @@ wss.on('connection', (ws) => {
   });
 
   // Handle close
-  ws.on('close', () => {
+  ws.on('close', async () => {
     Logger.connectionClosed(connection.id);
+    
+    // Handle game-related cleanup before removing connection
+    const context = {
+      connection,
+      message: { type: 'disconnect', payload: {} },
+      connectionManager,
+      gameManager,
+      playerManager,
+      roomManager,
+      broadcast: broadcastService
+    };
+    
+    await handleDisconnect(context);
+    
     connectionManager.removeConnection(connection.id);
     Metrics.decrementActivePlayers();
   });

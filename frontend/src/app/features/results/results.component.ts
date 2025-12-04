@@ -93,18 +93,25 @@ import { Game, Room } from '@monday-painter/models';
 
     .header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 48px;
       color: white;
     }
 
     .header h1 {
-      font-size: 48px;
-      margin-bottom: 8px;
+      font-size: 52px;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #FFD700 0%, #FF8C00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+      font-weight: 800;
     }
 
     .header p {
       font-size: 20px;
-      opacity: 0.9;
+      color: rgba(255, 255, 255, 0.9);
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }
 
     .navigation {
@@ -112,51 +119,60 @@ import { Game, Room } from '@monday-painter/models';
       justify-content: space-between;
       align-items: center;
       margin-bottom: 32px;
-      padding: 16px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
+      padding: 20px;
+      background: rgba(93, 63, 211, 0.15);
+      border-radius: 16px;
+      border: 2px solid rgba(93, 63, 211, 0.3);
+      backdrop-filter: blur(10px);
     }
 
     .nav-btn {
       padding: 12px 24px;
-      background: white;
-      color: #667eea;
-      border: none;
-      border-radius: 8px;
+      background: linear-gradient(135deg, var(--halloween-purple) 0%, var(--halloween-violet) 100%);
+      color: white;
+      border: 2px solid var(--halloween-violet);
+      border-radius: 12px;
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
     .nav-btn:hover:not(:disabled) {
-      background: #f3f4f6;
+      background: linear-gradient(135deg, var(--halloween-violet) 0%, var(--halloween-purple) 100%);
       transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(123, 44, 191, 0.5);
     }
 
     .nav-btn:disabled {
-      opacity: 0.5;
+      opacity: 0.4;
       cursor: not-allowed;
     }
 
     .chain-counter {
-      color: white;
-      font-size: 18px;
-      font-weight: 600;
+      color: #FFD700;
+      font-size: 20px;
+      font-weight: 700;
+      text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
     }
 
     .chain-display {
-      background: white;
-      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
       padding: 32px;
       margin-bottom: 32px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .chain-display h2 {
       text-align: center;
-      color: #667eea;
+      color: #FFD700;
       margin-bottom: 32px;
+      font-size: 28px;
+      text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
     }
 
     .chain-entries {
@@ -172,18 +188,18 @@ import { Game, Room } from '@monday-painter/models';
     }
 
     .prompt-entry {
-      background: #fef3c7;
-      border: 2px solid #fbbf24;
+      background: rgba(255, 215, 0, 0.15);
+      border: 2px solid rgba(255, 215, 0, 0.5);
     }
 
     .drawing-entry {
-      background: #dbeafe;
-      border: 2px solid #3b82f6;
+      background: rgba(93, 63, 211, 0.15);
+      border: 2px solid rgba(93, 63, 211, 0.5);
     }
 
     .guess-entry {
-      background: #d1fae5;
-      border: 2px solid #10b981;
+      background: rgba(255, 140, 0, 0.15);
+      border: 2px solid rgba(255, 140, 0, 0.5);
     }
 
     .entry-header {
@@ -198,12 +214,13 @@ import { Game, Room } from '@monday-painter/models';
       font-size: 14px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      color: #374151;
+      color: #FFD700;
+      text-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
     }
 
     .entry-player {
       font-size: 14px;
-      color: #6b7280;
+      color: rgba(255, 255, 255, 0.7);
       font-style: italic;
     }
 
@@ -214,24 +231,27 @@ import { Game, Room } from '@monday-painter/models';
     .text-content {
       font-size: 24px;
       font-weight: 600;
-      color: #1f2937;
+      color: white;
       text-align: center;
       padding: 16px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }
 
     .drawing-content {
       display: flex;
       justify-content: center;
-      background: white;
+      background: rgba(0, 0, 0, 0.3);
       padding: 16px;
-      border-radius: 8px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .arrow {
       text-align: center;
       font-size: 32px;
-      color: #9ca3af;
+      color: rgba(255, 215, 0, 0.5);
       margin: 16px 0;
+      text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
     }
 
     .actions {
@@ -246,28 +266,31 @@ import { Game, Room } from '@monday-painter/models';
       font-weight: 600;
       border-radius: 12px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s;
     }
 
     .actions .primary {
-      background: #667eea;
+      background: linear-gradient(135deg, var(--halloween-purple) 0%, var(--halloween-violet) 100%);
       color: white;
-      border: none;
+      border: 2px solid var(--halloween-violet);
     }
 
     .actions .primary:hover {
-      background: #5568d3;
+      background: linear-gradient(135deg, var(--halloween-violet) 0%, var(--halloween-purple) 100%);
       transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(123, 44, 191, 0.5);
     }
 
     .actions .secondary {
-      background: white;
-      color: #667eea;
-      border: 2px solid #667eea;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
     }
 
     .actions .secondary:hover {
-      background: #f3f4f6;
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.5);
       transform: translateY(-2px);
     }
   `]

@@ -88,29 +88,35 @@ import { DrawingData } from '@monday-painter/models';
 
     .prompt {
       text-align: center;
-      color: white;
-      font-size: 24px;
-      font-weight: 600;
+      color: #FFD700;
+      font-size: 28px;
+      font-weight: 700;
       margin-bottom: 24px;
-      padding: 16px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
+      padding: 20px;
+      background: rgba(255, 215, 0, 0.15);
+      border-radius: 16px;
+      border: 2px solid rgba(255, 215, 0, 0.3);
+      backdrop-filter: blur(10px);
+      text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
     }
 
     .canvas-container {
-      background: white;
-      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 16px;
       padding: 20px;
       margin-bottom: 16px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .toolbar {
-      background: white;
-      border-radius: 12px;
-      padding: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 20px;
       margin-bottom: 16px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       flex-wrap: wrap;
       gap: 24px;
@@ -125,7 +131,12 @@ import { DrawingData } from '@monday-painter/models';
 
     .tool-section label {
       font-weight: 600;
-      color: #374151;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .tool-section span {
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 500;
     }
 
     .color-picker {
@@ -134,36 +145,45 @@ import { DrawingData } from '@monday-painter/models';
     }
 
     .color-btn {
-      width: 32px;
-      height: 32px;
-      border: 2px solid #d1d5db;
+      width: 36px;
+      height: 36px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
       border-radius: 50%;
       cursor: pointer;
-      transition: transform 0.2s, border-color 0.2s;
+      transition: all 0.3s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
 
     .color-btn:hover {
-      transform: scale(1.1);
+      transform: scale(1.15);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
     }
 
     .color-btn.active {
-      border-color: #3b82f6;
-      border-width: 3px;
-      transform: scale(1.15);
+      border-color: #FFD700;
+      border-width: 4px;
+      transform: scale(1.2);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
     }
 
     .tool-btn {
-      padding: 8px 16px;
-      background: #f3f4f6;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
+      padding: 10px 18px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
       cursor: pointer;
       font-size: 14px;
-      transition: background 0.2s;
+      transition: all 0.3s;
+      color: white;
+      font-weight: 500;
+      backdrop-filter: blur(10px);
     }
 
     .tool-btn:hover {
-      background: #e5e7eb;
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
     input[type="range"] {

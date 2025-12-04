@@ -15,6 +15,7 @@ import { Game } from '@monday-painter/models';
 
         <div class="actions">
           <button 
+            *ngIf="isHost()"
             class="primary" 
             (click)="startGame()"
             [disabled]="game.players.length < 3">
@@ -25,6 +26,9 @@ import { Game } from '@monday-painter/models';
 
         <p class="hint" *ngIf="game.players.length < 3">
           Need at least 3 players to start
+        </p>
+        <p class="hint" *ngIf="!isHost() && game.players.length >= 3">
+          Waiting for host to start the game...
         </p>
       </div>
     </div>
@@ -37,18 +41,24 @@ import { Game } from '@monday-painter/models';
     }
 
     h1 {
-      margin-bottom: 8px;
+      margin-bottom: 12px;
+      color: #FFD700;
+      font-size: 32px;
+      text-align: center;
+      text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
     }
 
     p {
-      color: #666;
+      color: rgba(255, 255, 255, 0.8);
       margin-bottom: 24px;
+      text-align: center;
+      font-size: 16px;
     }
 
     .actions {
       display: flex;
       gap: 12px;
-      margin-top: 24px;
+      margin-top: 32px;
     }
 
     .actions button {
@@ -57,9 +67,15 @@ import { Game } from '@monday-painter/models';
 
     .hint {
       text-align: center;
-      font-size: 14px;
-      color: #f59e0b;
-      margin-top: 12px;
+      font-size: 15px;
+      color: #FFA500;
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: rgba(255, 140, 0, 0.15);
+      border-radius: 12px;
+      border: 2px solid rgba(255, 140, 0, 0.3);
+      backdrop-filter: blur(10px);
+      font-weight: 500;
     }
   `]
 })
@@ -82,6 +98,11 @@ export class LobbyComponent implements OnInit {
       if (game?.state === 'started') {
         this.router.navigate(['/game']);
       }
+      
+      // Navigate to home if game is null (deleted or left)
+      if (game === null) {
+        this.router.navigate(['/']);
+      }
     });
 
     // If no game state, redirect to home
@@ -92,6 +113,12 @@ export class LobbyComponent implements OnInit {
         }
       }, 1000);
     }
+  }
+
+  isHost(): boolean {
+    if (!this.game) return false;
+    const currentPlayerId = this.gameService.getCurrentPlayerId();
+    return this.game.hostId === currentPlayerId;
   }
 
   startGame(): void {

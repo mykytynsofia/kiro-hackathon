@@ -97,6 +97,24 @@ export class GameService {
       this.currentGameSubject.next(game);
       this.clearGameState();
     });
+
+    // Handle player left (lobby)
+    this.wsService.onMessage('playerLeft').subscribe(message => {
+      const game = message.payload.game as Game;
+      this.currentGameSubject.next(game);
+      const currentPlayerId = this.getCurrentPlayerId();
+      if (currentPlayerId) {
+        this.saveGameState(game, currentPlayerId);
+      }
+    });
+
+    // Handle game deleted (host left)
+    this.wsService.onMessage('gameDeleted').subscribe(message => {
+      console.log('Game deleted:', message.payload.message);
+      this.currentGameSubject.next(null);
+      this.clearGameState();
+      // The lobby component will handle navigation
+    });
   }
 
   private updateCurrentRoom(game: Game): void {
