@@ -33,13 +33,15 @@ export class CanvasComponent implements AfterViewInit {
     canvas.width = 800;
     canvas.height = 600;
     
-    // Set dark background
-    this.ctx.fillStyle = '#1a0b2e';
+    // Set darker background
+    this.ctx.fillStyle = '#0f0617';
     this.ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Set initial canvas style
+    // Set initial canvas style with glow effect
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
+    this.ctx.shadowBlur = 10;
+    this.ctx.shadowColor = '#FFFFFF';
   }
 
   onMouseDown(event: MouseEvent): void {
@@ -107,6 +109,10 @@ export class CanvasComponent implements AfterViewInit {
   }
 
   private drawLine(from: Point, to: Point, color: string, brushSize: number): void {
+    // Add glow effect
+    this.ctx.shadowBlur = 15;
+    this.ctx.shadowColor = color;
+    
     this.ctx.strokeStyle = color;
     this.ctx.lineWidth = brushSize;
     this.ctx.beginPath();
@@ -123,6 +129,10 @@ export class CanvasComponent implements AfterViewInit {
 
     if (stroke.points.length < 2) return;
 
+    // Add glow effect
+    this.ctx.shadowBlur = 15;
+    this.ctx.shadowColor = stroke.color;
+    
     this.ctx.strokeStyle = stroke.color;
     this.ctx.lineWidth = stroke.brushSize;
     this.ctx.beginPath();
@@ -137,8 +147,8 @@ export class CanvasComponent implements AfterViewInit {
 
   clear(): void {
     const canvas = this.canvasRef.nativeElement;
-    // Clear and redraw dark background
-    this.ctx.fillStyle = '#1a0b2e';
+    // Clear and redraw darker background
+    this.ctx.fillStyle = '#0f0617';
     this.ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
