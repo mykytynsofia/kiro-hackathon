@@ -50,10 +50,11 @@ monday-painter/
 ├── models/          # Shared TypeScript models
 ├── backend/         # Node.js WebSocket server
 ├── frontend/        # Angular web application
+├── docs/            # 📚 Detailed documentation
 ├── START_BACKEND.bat
 ├── START_FRONTEND.bat
-├── GET_NETWORK_INFO.bat
-└── NETWORK_SETUP.md
+├── START_NETWORK_GAME.bat
+└── GET_NETWORK_INFO.bat
 ```
 
 ## 🛠️ Development
@@ -114,6 +115,24 @@ See [NETWORK_SETUP.md](NETWORK_SETUP.md) for firewall configuration and troubles
 - **Backend**: Node.js, WebSocket (ws library)
 - **Models**: Shared TypeScript package
 - **Drawing**: HTML5 Canvas API
+
+## 📚 Documentation
+
+For detailed documentation, see the [docs/](docs/) folder:
+- [Current Status & TODOs](CURRENT_STATUS_AND_TODOS.md) - Project status and remaining work
+- [Network Setup Guide](NETWORK_SETUP.md) - Complete network play setup
+- [Firewall Configuration](FIREWALL_SETUP.md) - Windows Firewall setup
+- [Proposed Hooks](PROPOSED_HOOKS.md) - Kiro automation hooks
+- [All Documentation](docs/README.md) - Complete documentation index
+
+## 🪝 Automation Hooks
+
+See [PROPOSED_HOOKS.md](PROPOSED_HOOKS.md) for recommended Kiro hooks to automate your workflow:
+- Auto-build on save
+- Run tests automatically
+- Update documentation
+- Code review helper
+- And more!
 
 ## 📄 License
 
