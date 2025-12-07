@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameService } from '../../core/services/game.service';
-import { Game } from '@monday-painter/models';
+import { Game, PLAYER_ICONS, DEFAULT_ICON } from '@monday-painter/models';
 
 @Component({
   selector: 'app-lobby',
@@ -10,6 +10,21 @@ import { Game } from '@monday-painter/models';
       <div class="card">
         <h1>{{ game.name || 'Game Lobby' }}</h1>
         <p>Waiting for players... ({{ game.players.length }}/{{ game.maxPlayers }})</p>
+
+        <!-- Icon Selector -->
+        <div class="icon-selector">
+          <label>Choose your avatar:</label>
+          <div class="icon-grid">
+            <button 
+              *ngFor="let icon of availableIcons"
+              class="icon-btn"
+              [class.selected]="selectedIcon === icon.emoji"
+              (click)="selectIcon(icon.emoji)"
+              [title]="icon.label">
+              {{ icon.emoji }}
+            </button>
+          </div>
+        </div>
 
         <app-player-list [players]="game.players"></app-player-list>
 
@@ -77,10 +92,66 @@ import { Game } from '@monday-painter/models';
       backdrop-filter: blur(10px);
       font-weight: 500;
     }
+
+    .icon-selector {
+      margin-bottom: 24px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    .icon-selector label {
+      display: block;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .icon-grid {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .icon-btn {
+      width: 60px;
+      height: 60px;
+      font-size: 32px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 215, 0, 0.5);
+      transform: scale(1.1);
+    }
+
+    .icon-btn.selected {
+      background: rgba(255, 215, 0, 0.3);
+      border-color: #FFD700;
+      border-width: 4px;
+      transform: scale(1.15);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
   `]
 })
 export class LobbyComponent implements OnInit {
   game: Game | null = null;
+  availableIcons = PLAYER_ICONS;
+  selectedIcon: string = DEFAULT_ICON;
 
   constructor(
     private gameService: GameService,
@@ -93,6 +164,15 @@ export class LobbyComponent implements OnInit {
 
     this.gameService.game$.subscribe(game => {
       this.game = game;
+      
+      // Set current player's icon
+      if (game) {
+        const currentPlayerId = this.gameService.getCurrentPlayerId();
+        const currentPlayer = game.players.find(p => p.id === currentPlayerId);
+        if (currentPlayer?.icon) {
+          this.selectedIcon = currentPlayer.icon;
+        }
+      }
       
       // Navigate to game when started
       if (game?.state === 'started') {
@@ -123,6 +203,11 @@ export class LobbyComponent implements OnInit {
 
   startGame(): void {
     this.gameService.startGame();
+  }
+
+  selectIcon(icon: string): void {
+    this.selectedIcon = icon;
+    this.gameService.updatePlayerIcon(icon);
   }
 
   leaveGame(): void {

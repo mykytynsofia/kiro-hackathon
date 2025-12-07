@@ -18,6 +18,7 @@ import { handleSubmitGuess } from './handlers/submit-guess.handler';
 import { handleLeaveGame } from './handlers/leave-game.handler';
 import { handleGetGameList } from './handlers/get-game-list.handler';
 import { handleDisconnect } from './handlers/disconnect.handler';
+import { handleUpdatePlayerIcon } from './handlers/update-player-icon.handler';
 import { Logger } from './utils/logger';
 import { Metrics } from './utils/metrics';
 
@@ -44,6 +45,7 @@ messageRouter.register('submitDrawing', handleSubmitDrawing);
 messageRouter.register('submitGuess', handleSubmitGuess);
 messageRouter.register('leaveGame', handleLeaveGame);
 messageRouter.register('getGameList', handleGetGameList);
+messageRouter.register('updatePlayerIcon', handleUpdatePlayerIcon);
 
 // Create WebSocket server
 const wss = new WebSocketServer({ port: PORT as number });

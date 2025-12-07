@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameService } from '../../core/services/game.service';
-import { Game, Room } from '@monday-painter/models';
+import { Game, Room, DEFAULT_ICON } from '@monday-painter/models';
 
 @Component({
   selector: 'app-results',
@@ -46,6 +46,7 @@ import { Game, Room } from '@monday-painter/models';
                 {{ getEntryTypeLabel(entry.type) }}
               </span>
               <span class="entry-player">
+                <span class="player-icon">{{ getPlayerIcon(entry.playerId) }}</span>
                 by {{ getPlayerName(entry.playerId) }}
               </span>
             </div>
@@ -222,6 +223,13 @@ import { Game, Room } from '@monday-painter/models';
       font-size: 14px;
       color: rgba(255, 255, 255, 0.7);
       font-style: italic;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .player-icon {
+      font-size: 18px;
     }
 
     .entry-content {
@@ -357,6 +365,13 @@ export class ResultsComponent implements OnInit {
     
     const player = this.game.players.find(p => p.id === playerId);
     return player?.displayName || 'Unknown Player';
+  }
+
+  getPlayerIcon(playerId: string): string {
+    if (!this.game) return DEFAULT_ICON;
+    
+    const player = this.game.players.find(p => p.id === playerId);
+    return player?.icon || DEFAULT_ICON;
   }
 
   getDrawingData(content: any): any {

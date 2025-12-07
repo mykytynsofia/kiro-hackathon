@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Player, ConnectionStatus } from '@monday-painter/models';
+import { Player, ConnectionStatus, DEFAULT_ICON } from '@monday-painter/models';
 
 @Component({
   selector: 'app-player-list',
@@ -8,6 +8,7 @@ import { Player, ConnectionStatus } from '@monday-painter/models';
       <h3>Players ({{ players.length }})</h3>
       <div class="players">
         <div *ngFor="let player of players" class="player-item">
+          <span class="player-icon">{{ player.icon || defaultIcon }}</span>
           <span class="player-status" 
                 [class.connected]="player.connectionStatus === ConnectionStatus.CONNECTED"
                 [class.disconnected]="player.connectionStatus === ConnectionStatus.DISCONNECTED">
@@ -61,6 +62,11 @@ import { Player, ConnectionStatus } from '@monday-painter/models';
       background: #ef4444;
     }
 
+    .player-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
     .player-name {
       font-weight: 500;
       color: #374151;
@@ -70,4 +76,5 @@ import { Player, ConnectionStatus } from '@monday-painter/models';
 export class PlayerListComponent {
   @Input() players: Player[] = [];
   ConnectionStatus = ConnectionStatus;
+  defaultIcon = DEFAULT_ICON;
 }

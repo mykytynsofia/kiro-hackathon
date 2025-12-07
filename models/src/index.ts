@@ -8,6 +8,7 @@ export * from './types';
 
 // Export constants
 export * from './constants';
+export * from './player-icons';
 
 // Export validation types and functions
 export type { ValidationResult, ValidationError } from './validation/types';

@@ -34,6 +34,7 @@
 - ✅ **Host-Only Start** - Only host can start game
 - ✅ **Waiting States** - "Waiting for others..." messages
 - ✅ **State Persistence** - Survives page refresh (F5)
+- ✅ **Player Icons** - Choose avatar emoji (👶👩👨👨‍🌾👨‍🍳) in lobby
 
 ### Technical
 - ✅ **TypeScript** - Full type safety
@@ -284,6 +285,6 @@ The remaining TODOs are **polish and enhancements**, not blockers.
 
 ---
 
-**Last Updated**: December 7, 2025 - After responsive canvas and frontend auto-submit
-**Status**: ✅ Fully Playable with Responsive Canvas
+**Last Updated**: December 7, 2025 - After player icon selection
+**Status**: ✅ Fully Playable with Player Icons
 **Next Priority**: Error notifications or sound effects

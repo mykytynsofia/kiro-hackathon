@@ -168,6 +168,13 @@ export class GameService {
     this.currentPhaseSubject.next(null);
   }
 
+  updatePlayerIcon(icon: string): void {
+    this.wsService.send({
+      type: 'updatePlayerIcon',
+      payload: { icon }
+    });
+  }
+
   submitPrompt(prompt: string): void {
     this.wsService.send({
       type: 'submitPrompt',
