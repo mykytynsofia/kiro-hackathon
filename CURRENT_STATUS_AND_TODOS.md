@@ -44,6 +44,7 @@
 - ✅ **Build System** - Both backend and frontend compile
 - ✅ **Timer UI** - Visual countdown with green progress bar
 - ✅ **Responsive Canvas** - Scales drawings across all devices
+- ✅ **Sound Effects** - Custom audio files for lobby/drawing music, countdown beeps, game end fanfare
 
 ---
 
@@ -112,12 +113,21 @@
 - `frontend/src/app/shared/components/player-list/player-list.component.ts`
 
 #### 5. Sound Effects 🔊
-**Status**: Not implemented
+**Status**: ✅ COMPLETED
 **Description**: Add sounds for actions (submit, phase change, game end)
 **Impact**: Low - UX enhancement
-**Files to create**:
-- `frontend/src/app/core/services/audio.service.ts`
-- `frontend/src/assets/sounds/` (audio files)
+**Files created**:
+- `frontend/src/app/core/services/audio.service.ts` (audio playback service)
+- `frontend/src/assets/sounds/` (custom WAV audio files)
+- `generate-audio.js` (Node.js script to generate audio files)
+
+**Implementation**:
+- Lobby music: Calm C-E-G-E arpeggio (loops continuously)
+- Drawing music: Upbeat C-D-E-G-E-D melody (loops continuously)
+- Countdown beep: 800Hz beep for last 5 seconds
+- Game end: Victory fanfare (C-E-G ascending)
+- Mute button: Toggle all sounds on/off
+- Uses HTML5 Audio API with preloaded WAV files for better sound quality
 
 ### Low Priority (Nice to Have)
 
@@ -211,11 +221,11 @@ All major issues have been fixed:
 - Network play: ✅ 100%
 - Timers: ✅ 100%
 
-### Polish: 75% ⚠️
+### Polish: 87% ⚠️
 - Error handling: ⚠️ 50%
 - Loading states: ⚠️ 30%
 - Visual feedback: ✅ 100%
-- Sounds: ❌ 0%
+- Sounds: ✅ 100%
 
 ### Advanced Features: 0% ❌
 - Chat: ❌ 0%
@@ -223,7 +233,7 @@ All major issues have been fixed:
 - History: ❌ 0%
 - Spectator: ❌ 0%
 
-### Overall: 87% Complete 🎉
+### Overall: 90% Complete 🎉
 
 ---
 
@@ -259,7 +269,6 @@ All major issues have been fixed:
 ### What Could Be Better:
 - ⚠️ No error notifications (silent failures)
 - ⚠️ No loading indicators (feels unresponsive)
-- ⚠️ No sounds (less engaging)
 
 ### What's Not Needed (Yet):
 - ❌ Database (in-memory is fine for now)
@@ -285,6 +294,6 @@ The remaining TODOs are **polish and enhancements**, not blockers.
 
 ---
 
-**Last Updated**: December 7, 2025 - After player icon selection
-**Status**: ✅ Fully Playable with Player Icons
-**Next Priority**: Error notifications or sound effects
+**Last Updated**: December 7, 2025 - After custom audio files implementation
+**Status**: ✅ Fully Playable with Custom Sound Effects
+**Next Priority**: Error notifications or additional polish

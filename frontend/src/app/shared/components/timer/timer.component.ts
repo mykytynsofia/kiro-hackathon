@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
+import { AudioService } from '../../../core/services/audio.service';
 
 @Component({
   selector: 'app-timer',
@@ -136,6 +137,9 @@ export class TimerComponent implements OnInit, OnDestroy {
   
   private intervalId: any;
   private hasExpired: boolean = false;
+  private lastBeepSecond: number = -1;
+
+  constructor(private audioService: AudioService) {}
 
   ngOnInit(): void {
     this.totalDuration = this.phaseDuration;
@@ -165,6 +169,13 @@ export class TimerComponent implements OnInit, OnDestroy {
     
     // Calculate progress percentage (100% = full time, 0% = no time)
     this.progressPercentage = (this.timeRemaining / this.totalDuration) * 100;
+
+    // Play countdown beeps for last 5 seconds
+    const secondsRemaining = Math.ceil(this.timeRemaining);
+    if (secondsRemaining <= 5 && secondsRemaining > 0 && secondsRemaining !== this.lastBeepSecond) {
+      this.audioService.playCountdownBeep();
+      this.lastBeepSecond = secondsRemaining;
+    }
 
     // Emit event when time runs out (only once)
     if (this.timeRemaining <= 0 && !this.hasExpired) {

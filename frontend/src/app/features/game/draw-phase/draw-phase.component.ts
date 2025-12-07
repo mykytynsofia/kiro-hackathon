@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { GameService } from '../../../core/services/game.service';
+import { AudioService } from '../../../core/services/audio.service';
 import { CanvasComponent } from '../../../shared/components/canvas/canvas.component';
 import { DrawingData } from '@monday-painter/models';
 
@@ -245,9 +246,15 @@ export class DrawPhaseComponent implements OnInit, OnDestroy {
   phaseDuration: number = 60; // DRAW_DURATION (varies by round)
   private subscriptions: Subscription[] = [];
 
-  constructor(private gameService: GameService) {}
+  constructor(
+    private gameService: GameService,
+    private audioService: AudioService
+  ) {}
 
   ngOnInit(): void {
+    // Play drawing music
+    this.audioService.playDrawingMusic();
+
     // Get current room to access the prompt and timer info
     const roomSub = this.gameService.currentRoom$.subscribe(room => {
       if (room) {
@@ -278,6 +285,7 @@ export class DrawPhaseComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.audioService.stopDrawingMusic();
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 

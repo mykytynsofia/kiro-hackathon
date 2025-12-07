@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameService } from '../../core/services/game.service';
+import { AudioService } from '../../core/services/audio.service';
 import { Game, Room, DEFAULT_ICON } from '@monday-painter/models';
 
 @Component({
@@ -310,10 +311,14 @@ export class ResultsComponent implements OnInit {
 
   constructor(
     private gameService: GameService,
+    private audioService: AudioService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    // Play game end sound
+    this.audioService.playGameEndSound();
+
     // Get game from service
     this.game = this.gameService.getCurrentGame();
     

@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameService } from '../../core/services/game.service';
+import { AudioService } from '../../core/services/audio.service';
 import { Game, PLAYER_ICONS, DEFAULT_ICON } from '@monday-painter/models';
 
 @Component({
@@ -45,6 +46,11 @@ import { Game, PLAYER_ICONS, DEFAULT_ICON } from '@monday-painter/models';
         <p class="hint" *ngIf="!isHost() && game.players.length >= 3">
           Waiting for host to start the game...
         </p>
+
+        <!-- Mute Button -->
+        <button class="mute-btn" (click)="toggleMute()" [title]="audioService.isMutedState() ? 'Unmute' : 'Mute'">
+          {{ audioService.isMutedState() ? '🔇' : '🔊' }}
+        </button>
       </div>
     </div>
   `,
@@ -146,19 +152,44 @@ import { Game, PLAYER_ICONS, DEFAULT_ICON } from '@monday-painter/models';
       transform: scale(1.15);
       box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
     }
+
+    .mute-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+    }
+
+    .mute-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
   `]
 })
-export class LobbyComponent implements OnInit {
+export class LobbyComponent implements OnInit, OnDestroy {
   game: Game | null = null;
   availableIcons = PLAYER_ICONS;
   selectedIcon: string = DEFAULT_ICON;
 
   constructor(
     private gameService: GameService,
+    public audioService: AudioService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    // Start lobby music
+    this.audioService.playLobbyMusic();
+
     // Restore game state if available
     this.gameService.restoreGameState();
 
@@ -205,12 +236,25 @@ export class LobbyComponent implements OnInit {
     this.gameService.startGame();
   }
 
+  ngOnDestroy(): void {
+    this.audioService.stopLobbyMusic();
+  }
+
   selectIcon(icon: string): void {
     this.selectedIcon = icon;
     this.gameService.updatePlayerIcon(icon);
   }
 
+  toggleMute(): void {
+    const muted = this.audioService.toggleMute();
+    if (!muted) {
+      // Resume lobby music if unmuted
+      this.audioService.playLobbyMusic();
+    }
+  }
+
   leaveGame(): void {
+    this.audioService.stopLobbyMusic();
     this.gameService.leaveGame();
     this.router.navigate(['/']);
   }
