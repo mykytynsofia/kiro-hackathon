@@ -83,6 +83,11 @@ import { Game, Room, DEFAULT_ICON } from '@monday-painter/models';
           🏠 Back to Home
         </button>
       </div>
+
+      <!-- Mute Button -->
+      <button class="mute-btn" (click)="toggleMute()" [title]="audioService.isMutedState() ? 'Unmute' : 'Mute'">
+        {{ audioService.isMutedState() ? '🔇' : '🔊' }}
+      </button>
     </div>
   `,
   styles: [`
@@ -302,6 +307,27 @@ import { Game, Room, DEFAULT_ICON } from '@monday-painter/models';
       border-color: rgba(255, 255, 255, 0.5);
       transform: translateY(-2px);
     }
+
+    .mute-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+    }
+
+    .mute-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
   `]
 })
 export class ResultsComponent implements OnInit {
@@ -311,7 +337,7 @@ export class ResultsComponent implements OnInit {
 
   constructor(
     private gameService: GameService,
-    private audioService: AudioService,
+    public audioService: AudioService,
     private router: Router
   ) {}
 
@@ -385,6 +411,10 @@ export class ResultsComponent implements OnInit {
       return content;
     }
     return null;
+  }
+
+  toggleMute(): void {
+    this.audioService.toggleMute();
   }
 
   playAgain(): void {

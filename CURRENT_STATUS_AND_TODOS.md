@@ -126,8 +126,9 @@
 - Drawing music: Upbeat C-D-E-G-E-D melody (loops continuously)
 - Countdown beep: 800Hz beep for last 5 seconds
 - Game end: Victory fanfare (C-E-G ascending)
-- Mute button: Toggle all sounds on/off
+- Mute button: Toggle all sounds on/off (available in lobby, game, and results)
 - Uses HTML5 Audio API with preloaded WAV files for better sound quality
+- Custom audio files generated via Node.js script (generate-audio.js)
 
 ### Low Priority (Nice to Have)
 

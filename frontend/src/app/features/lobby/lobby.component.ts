@@ -46,12 +46,12 @@ import { Game, PLAYER_ICONS, DEFAULT_ICON } from '@monday-painter/models';
         <p class="hint" *ngIf="!isHost() && game.players.length >= 3">
           Waiting for host to start the game...
         </p>
-
-        <!-- Mute Button -->
-        <button class="mute-btn" (click)="toggleMute()" [title]="audioService.isMutedState() ? 'Unmute' : 'Mute'">
-          {{ audioService.isMutedState() ? '🔇' : '🔊' }}
-        </button>
       </div>
+
+      <!-- Mute Button (outside card for fixed positioning) -->
+      <button class="mute-btn" (click)="toggleMute()" [title]="audioService.isMutedState() ? 'Unmute' : 'Mute'">
+        {{ audioService.isMutedState() ? '🔇' : '🔊' }}
+      </button>
     </div>
   `,
   styles: [`

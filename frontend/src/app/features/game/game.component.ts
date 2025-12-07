@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { GameService } from '../../core/services/game.service';
+import { AudioService } from '../../core/services/audio.service';
 import { Phase, GameState } from '@monday-painter/models';
 
 @Component({
@@ -35,6 +36,11 @@ import { Phase, GameState } from '@monday-painter/models';
           [subMessage]="'The host will start the game soon'">
         </app-transition>
       </div>
+
+      <!-- Mute Button -->
+      <button class="mute-btn" (click)="toggleMute()" [title]="audioService.isMutedState() ? 'Unmute' : 'Mute'">
+        {{ audioService.isMutedState() ? '🔇' : '🔊' }}
+      </button>
     </div>
   `,
   styles: [`
@@ -96,6 +102,27 @@ import { Phase, GameState } from '@monday-painter/models';
       max-width: 1200px;
       margin: 0 auto;
     }
+
+    .mute-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+    }
+
+    .mute-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
   `]
 })
 export class GameComponent implements OnInit, OnDestroy {
@@ -106,6 +133,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
   constructor(
     private gameService: GameService,
+    public audioService: AudioService,
     private router: Router
   ) {}
 
@@ -155,6 +183,10 @@ export class GameComponent implements OnInit, OnDestroy {
       default:
         return 'Playing';
     }
+  }
+
+  toggleMute(): void {
+    this.audioService.toggleMute();
   }
 
   leaveGame(): void {
