@@ -4,7 +4,7 @@ import { DrawingData, Stroke, ToolType } from '@monday-painter/models';
 @Component({
   selector: 'app-canvas',
   template: `
-    <div class="canvas-wrapper">
+    <div class="canvas-wrapper" #wrapper>
       <canvas
         #canvas
         [width]="width"
@@ -26,10 +26,15 @@ import { DrawingData, Stroke, ToolType } from '@monday-painter/models';
       background: white;
       border-radius: 8px;
       overflow: hidden;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
     }
 
     canvas {
       display: block;
+      width: 100%;
+      height: auto;
       cursor: crosshair;
       touch-action: none;
     }
@@ -41,6 +46,7 @@ import { DrawingData, Stroke, ToolType } from '@monday-painter/models';
 })
 export class CanvasComponent implements AfterViewInit, OnChanges {
   @ViewChild('canvas', { static: false }) canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('wrapper', { static: false }) wrapperRef!: ElementRef<HTMLDivElement>;
   @Input() width = 800;
   @Input() height = 600;
   @Input() readonly = false;
@@ -51,6 +57,7 @@ export class CanvasComponent implements AfterViewInit, OnChanges {
   private isDrawing = false;
   private currentStroke: Stroke | null = null;
   private strokes: Stroke[] = [];
+  private scale = 1; // Scale factor for responsive canvas
   
   // Drawing settings
   currentColor = '#000000';
@@ -61,10 +68,28 @@ export class CanvasComponent implements AfterViewInit, OnChanges {
     const canvas = this.canvasRef.nativeElement;
     this.ctx = canvas.getContext('2d')!;
     
+    // Calculate scale factor
+    this.updateScale();
+    
     // Load existing drawing if provided
     if (this.drawingData) {
       this.loadDrawing(this.drawingData);
     }
+    
+    // Update scale on window resize
+    window.addEventListener('resize', () => this.updateScale());
+  }
+  
+  private updateScale(): void {
+    const canvas = this.canvasRef.nativeElement;
+    const wrapper = this.wrapperRef.nativeElement;
+    
+    // Calculate scale based on actual displayed size vs canvas size
+    const displayWidth = canvas.offsetWidth;
+    const canvasWidth = this.width;
+    this.scale = displayWidth / canvasWidth;
+    
+    console.log('[CANVAS] Scale factor:', this.scale, 'Display:', displayWidth, 'Canvas:', canvasWidth);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -81,8 +106,9 @@ export class CanvasComponent implements AfterViewInit, OnChanges {
     if (this.readonly) return;
     
     const rect = this.canvasRef.nativeElement.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+    // Scale coordinates to canvas size
+    const x = (event.clientX - rect.left) / this.scale;
+    const y = (event.clientY - rect.top) / this.scale;
     
     this.startStroke(x, y);
   }
@@ -91,8 +117,9 @@ export class CanvasComponent implements AfterViewInit, OnChanges {
     if (!this.isDrawing || this.readonly) return;
     
     const rect = this.canvasRef.nativeElement.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+    // Scale coordinates to canvas size
+    const x = (event.clientX - rect.left) / this.scale;
+    const y = (event.clientY - rect.top) / this.scale;
     
     this.continueStroke(x, y);
   }
@@ -108,8 +135,9 @@ export class CanvasComponent implements AfterViewInit, OnChanges {
     
     const touch = event.touches[0];
     const rect = this.canvasRef.nativeElement.getBoundingClientRect();
-    const x = touch.clientX - rect.left;
-    const y = touch.clientY - rect.top;
+    // Scale coordinates to canvas size
+    const x = (touch.clientX - rect.left) / this.scale;
+    const y = (touch.clientY - rect.top) / this.scale;
     
     this.startStroke(x, y);
   }
@@ -120,8 +148,9 @@ export class CanvasComponent implements AfterViewInit, OnChanges {
     
     const touch = event.touches[0];
     const rect = this.canvasRef.nativeElement.getBoundingClientRect();
-    const x = touch.clientX - rect.left;
-    const y = touch.clientY - rect.top;
+    // Scale coordinates to canvas size
+    const x = (touch.clientX - rect.left) / this.scale;
+    const y = (touch.clientY - rect.top) / this.scale;
     
     this.continueStroke(x, y);
   }
@@ -214,6 +243,26 @@ export class CanvasComponent implements AfterViewInit, OnChanges {
 
   private loadDrawing(data: DrawingData): void {
     this.strokes = data.strokes || [];
+    
+    // If drawing was created on different canvas size, scale it
+    if (data.width && data.height && (data.width !== this.width || data.height !== this.height)) {
+      const scaleX = this.width / data.width;
+      const scaleY = this.height / data.height;
+      
+      console.log('[CANVAS] Scaling drawing from', data.width, 'x', data.height, 'to', this.width, 'x', this.height);
+      console.log('[CANVAS] Scale factors: X =', scaleX, 'Y =', scaleY);
+      
+      // Scale all strokes
+      this.strokes = this.strokes.map(stroke => ({
+        ...stroke,
+        points: stroke.points.map(point => ({
+          x: point.x * scaleX,
+          y: point.y * scaleY
+        })),
+        width: stroke.width * Math.min(scaleX, scaleY) // Scale line width proportionally
+      }));
+    }
+    
     this.redraw();
   }
 

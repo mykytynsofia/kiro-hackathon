@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-timer',
@@ -128,12 +128,14 @@ import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 export class TimerComponent implements OnInit, OnDestroy {
   @Input() phaseStartedAt: number = 0;
   @Input() phaseDuration: number = 60; // in seconds
+  @Output() timeExpired = new EventEmitter<void>();
   
   timeRemaining: number = 0;
   totalDuration: number = 0;
   progressPercentage: number = 100;
   
   private intervalId: any;
+  private hasExpired: boolean = false;
 
   ngOnInit(): void {
     this.totalDuration = this.phaseDuration;
@@ -164,10 +166,15 @@ export class TimerComponent implements OnInit, OnDestroy {
     // Calculate progress percentage (100% = full time, 0% = no time)
     this.progressPercentage = (this.timeRemaining / this.totalDuration) * 100;
 
-    // Stop timer when time runs out
-    if (this.timeRemaining <= 0 && this.intervalId) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
+    // Emit event when time runs out (only once)
+    if (this.timeRemaining <= 0 && !this.hasExpired) {
+      this.hasExpired = true;
+      this.timeExpired.emit();
+      
+      if (this.intervalId) {
+        clearInterval(this.intervalId);
+        this.intervalId = null;
+      }
     }
   }
 

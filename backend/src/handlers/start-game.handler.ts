@@ -29,6 +29,7 @@ export async function handleStartGame(context: HandlerContext): Promise<void> {
         await handleInputPhaseExpiry(game, room, {
           gameManager: context.gameManager,
           roomManager: context.roomManager,
+          timerManager: context.timerManager,
           broadcast: context.broadcast
         });
       });

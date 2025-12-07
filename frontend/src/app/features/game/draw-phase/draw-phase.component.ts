@@ -15,7 +15,8 @@ import { DrawingData } from '@monday-painter/models';
       <app-timer 
         *ngIf="phaseStartedAt && phaseDuration"
         [phaseStartedAt]="phaseStartedAt"
-        [phaseDuration]="phaseDuration">
+        [phaseDuration]="phaseDuration"
+        (timeExpired)="onTimeExpired()">
       </app-timer>
 
       <!-- Drawing Canvas -->
@@ -283,6 +284,16 @@ export class DrawPhaseComponent implements OnInit, OnDestroy {
   submitDrawing(): void {
     if (!this.submitted && this.canvasComponent) {
       const drawingData = this.canvasComponent.getDrawingData();
+      this.gameService.submitDrawing(drawingData);
+      this.submitted = true;
+    }
+  }
+
+  onTimeExpired(): void {
+    if (!this.submitted && this.canvasComponent) {
+      // Auto-submit whatever is currently drawn on the canvas
+      const drawingData = this.canvasComponent.getDrawingData();
+      console.log('[DRAW] Timer expired - auto-submitting current drawing with', drawingData.strokes.length, 'strokes');
       this.gameService.submitDrawing(drawingData);
       this.submitted = true;
     }

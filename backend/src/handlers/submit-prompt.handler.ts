@@ -87,6 +87,7 @@ export async function handleSubmitPrompt(context: HandlerContext): Promise<void>
         await handleDrawPhaseExpiry(game, nextRoom, {
           gameManager: context.gameManager,
           roomManager: context.roomManager,
+          timerManager: context.timerManager,
           broadcast: context.broadcast
         });
       });

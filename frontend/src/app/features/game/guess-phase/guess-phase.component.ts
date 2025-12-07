@@ -16,11 +16,15 @@ import { CanvasComponent } from '../../../shared/components/canvas/canvas.compon
       <app-timer 
         *ngIf="phaseStartedAt && phaseDuration"
         [phaseStartedAt]="phaseStartedAt"
-        [phaseDuration]="phaseDuration">
+        [phaseDuration]="phaseDuration"
+        (timeExpired)="onTimeExpired()">
       </app-timer>
 
       <!-- Drawing Display -->
       <div class="drawing-container">
+        <div *ngIf="isEmptyDrawing()" class="empty-drawing-notice">
+          ⏱️ Time expired - No drawing was submitted
+        </div>
         <app-canvas
           #canvas
           [width]="800"
@@ -87,6 +91,22 @@ import { CanvasComponent } from '../../../shared/components/canvas/canvas.compon
       margin-bottom: 24px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
       border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+    }
+
+    .empty-drawing-notice {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 170, 0, 0.9);
+      color: #000;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 600;
+      z-index: 10;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
     }
 
     .form-container {
@@ -242,14 +262,38 @@ export class GuessPhaseComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.drawingData && this.canvasComponent) {
       // The canvas component will load the drawing via the [drawingData] input
       // But we can also manually trigger a redraw if needed
-      console.log('Loading drawing with', this.drawingData.strokes?.length || 0, 'strokes');
+      console.log('[GUESS] Loading drawing with', this.drawingData.strokes?.length || 0, 'strokes');
+      console.log('[GUESS] Drawing data:', this.drawingData);
     }
+  }
+
+  isEmptyDrawing(): boolean {
+    return !this.drawingData || !this.drawingData.strokes || this.drawingData.strokes.length === 0;
   }
 
   submitGuess(): void {
     if (this.guessControl.valid && !this.submitted) {
       const guess = this.guessControl.value?.trim() || '';
       this.gameService.submitGuess(guess);
+      this.submitted = true;
+    }
+  }
+
+  onTimeExpired(): void {
+    if (!this.submitted) {
+      // Auto-submit whatever text is currently in the input
+      const currentText = this.guessControl.value?.trim() || '';
+      
+      if (currentText.length >= 3) {
+        // If valid text, submit it
+        console.log('[GUESS] Timer expired - auto-submitting current guess:', currentText);
+        this.gameService.submitGuess(currentText);
+      } else {
+        // If invalid/empty, submit placeholder
+        console.log('[GUESS] Timer expired - submitting placeholder (text too short)');
+        this.gameService.submitGuess('[Time expired - no valid guess]');
+      }
+      
       this.submitted = true;
     }
   }

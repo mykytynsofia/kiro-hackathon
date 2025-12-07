@@ -14,7 +14,8 @@ import { GameService } from '../../../core/services/game.service';
       <app-timer 
         *ngIf="phaseStartedAt && phaseDuration"
         [phaseStartedAt]="phaseStartedAt"
-        [phaseDuration]="phaseDuration">
+        [phaseDuration]="phaseDuration"
+        (timeExpired)="onTimeExpired()">
       </app-timer>
 
       <div class="form-container">
@@ -197,6 +198,25 @@ export class InputPhaseComponent implements OnInit, OnDestroy {
     if (this.promptControl.valid && !this.submitted) {
       const prompt = this.promptControl.value?.trim() || '';
       this.gameService.submitPrompt(prompt);
+      this.submitted = true;
+    }
+  }
+
+  onTimeExpired(): void {
+    if (!this.submitted) {
+      // Auto-submit whatever text is currently in the input
+      const currentText = this.promptControl.value?.trim() || '';
+      
+      if (currentText.length >= 3) {
+        // If valid text, submit it
+        console.log('[INPUT] Timer expired - auto-submitting current text:', currentText);
+        this.gameService.submitPrompt(currentText);
+      } else {
+        // If invalid/empty, submit placeholder
+        console.log('[INPUT] Timer expired - submitting placeholder (text too short)');
+        this.gameService.submitPrompt('[Time expired - no valid prompt]');
+      }
+      
       this.submitted = true;
     }
   }

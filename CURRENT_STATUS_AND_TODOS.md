@@ -42,6 +42,7 @@
 - ✅ **Shared Models** - Single source of truth
 - ✅ **Build System** - Both backend and frontend compile
 - ✅ **Timer UI** - Visual countdown with green progress bar
+- ✅ **Responsive Canvas** - Scales drawings across all devices
 
 ---
 
@@ -196,6 +197,7 @@ All major issues have been fixed:
 - ✅ Phase advancement works
 - ✅ Room rotation works
 - ✅ Results page works
+- ✅ Timer auto-submit works for all phases
 
 ---
 
@@ -282,6 +284,6 @@ The remaining TODOs are **polish and enhancements**, not blockers.
 
 ---
 
-**Last Updated**: December 4, 2025 - After visual timer UI implementation
-**Status**: ✅ Fully Playable with Visual Timers
+**Last Updated**: December 7, 2025 - After responsive canvas and frontend auto-submit
+**Status**: ✅ Fully Playable with Responsive Canvas
 **Next Priority**: Error notifications or sound effects
