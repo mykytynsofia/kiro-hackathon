@@ -1,5 +1,8 @@
 # Drawing Game
 
+![alt text](image-1.png)
+
+
 A real-time multiplayer drawing and guessing game built with WebSockets, similar to Gartic Phone/Skribbl.io. Halloween themed!
 
 ## Quick Start
