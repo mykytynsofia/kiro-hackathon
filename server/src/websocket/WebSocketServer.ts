@@ -1,8 +1,9 @@
 import WebSocket from 'ws';
 import { Server as HTTPServer } from 'http';
 import { GameRoomManager } from '../services/GameRoomManager';
-import { GameConfig, Player, GameMessage, ClientMessage } from '../models/types';
+import { GameConfig, Player, GameMessage, ClientMessage, PlayerRanking } from '../models/types';
 import { AvatarService } from '../services/AvatarService';
+import { ScoringEngine } from '../services/ScoringEngine';
 import { v4 as uuidv4 } from 'uuid';
 
 interface ConnectionInfo {
@@ -17,12 +18,16 @@ export class WebSocketServer {
   private connections: Map<string, ConnectionInfo>;
   private roomManager: GameRoomManager;
   private config: GameConfig;
+  private scoringEngines: Map<string, ScoringEngine>;
+  private roundStartTimes: Map<string, number>;
 
   constructor(server: HTTPServer, roomManager: GameRoomManager, config: GameConfig) {
     this.wss = new WebSocket.Server({ server });
     this.connections = new Map();
     this.roomManager = roomManager;
     this.config = config;
+    this.scoringEngines = new Map();
+    this.roundStartTimes = new Map();
 
     this.wss.on('connection', (ws: WebSocket) => {
       this.handleConnection(ws);
@@ -69,8 +74,9 @@ export class WebSocketServer {
     if (conn.playerId && conn.roomId) {
       const room = this.roomManager.getRoom(conn.roomId);
       if (room) {
+        const wasDrawer = room.activeDrawerId === conn.playerId;
         room.removePlayer(conn.playerId);
-        
+
         // Broadcast player left
         this.broadcastToRoom(conn.roomId, {
           type: 'player_left',
@@ -79,15 +85,18 @@ export class WebSocketServer {
           timestamp: Date.now()
         });
 
-        // If drawer disconnected, handle it
-        if (room.activeDrawerId === conn.playerId) {
-          // End round and select new drawer
-          // This will be handled by the game logic integration
+        // If drawer disconnected, end round and start new one
+        if (wasDrawer && room.hasStarted && !room.isEmpty()) {
+          console.log(`Drawer ${conn.playerId} disconnected, ending round early`);
+          this.endRound(room);
         }
 
         // Schedule cleanup if room is empty
         if (room.isEmpty()) {
           this.roomManager.scheduleCleanup(conn.roomId);
+          // Clean up scoring engine and round start time
+          this.scoringEngines.delete(conn.roomId);
+          this.roundStartTimes.delete(conn.roomId);
         }
       }
     }
@@ -271,6 +280,16 @@ export class WebSocketServer {
     const room = this.roomManager.getRoom(conn.roomId);
     if (!room) return;
 
+    // Prevent drawer from guessing
+    if (room.activeDrawerId === conn.playerId) {
+      return;
+    }
+
+    // Check if player already guessed correctly this round
+    if (room.hasPlayerGuessedCorrectly(conn.playerId)) {
+      return;
+    }
+
     const guess = message.guess;
     if (!guess || typeof guess !== 'string' || guess.trim() === '') {
       return; // Ignore empty guesses
@@ -289,8 +308,18 @@ export class WebSocketServer {
     });
 
     if (result.correct) {
-      // Calculate points (simplified for now)
-      const points = 500; // TODO: Use ScoringEngine with proper timing
+      // Calculate points using ScoringEngine
+      const roundStartTime = this.roundStartTimes.get(conn.roomId) || Date.now();
+      const guessTime = (Date.now() - roundStartTime) / 1000; // Convert to seconds
+      const guessOrder = room.getCorrectGuessCount();
+
+      let scoringEngine = this.scoringEngines.get(conn.roomId);
+      if (!scoringEngine) {
+        scoringEngine = new ScoringEngine();
+        this.scoringEngines.set(conn.roomId, scoringEngine);
+      }
+
+      const points = scoringEngine.calculatePoints(guessTime, this.config.roundDuration, guessOrder);
       room.updateScore(conn.playerId, points);
 
       // Broadcast guess result
@@ -319,6 +348,9 @@ export class WebSocketServer {
 
   private startRound(room: any): void {
     room.startRound();
+
+    // Track round start time for scoring
+    this.roundStartTimes.set(room.id, Date.now());
 
     console.log(`Round ${room.currentRound} started in room ${room.id}. Drawer: ${room.activeDrawerId}, Prompt: ${room.currentPrompt}`);
 
@@ -380,15 +412,49 @@ export class WebSocketServer {
         console.log(`Starting round ${freshRoom.currentRound + 1} in room ${roomId}`);
         this.startRound(freshRoom);
       } else {
-        // Game end
+        // Game end - calculate final rankings
         console.log(`Game ended in room ${roomId}`);
+        const finalRankings = this.calculateFinalRankings(freshRoom);
         this.broadcastToRoom(roomId, {
           type: 'game_end',
-          finalRankings: [], // TODO: Calculate rankings
+          finalRankings,
           timestamp: Date.now()
         });
+
+        // Reset room for new game
+        freshRoom.hasStarted = false;
+        freshRoom.currentRound = 0;
+
+        // Clean up scoring data
+        this.scoringEngines.delete(roomId);
+        this.roundStartTimes.delete(roomId);
       }
     }, this.config.intermissionDuration * 1000);
+  }
+
+  private calculateFinalRankings(room: any): PlayerRanking[] {
+    const rankings: PlayerRanking[] = [];
+    const players = room.getPlayers();
+    const scores = room.getScoreboard();
+
+    for (const player of players) {
+      rankings.push({
+        playerId: player.id,
+        playerName: player.name,
+        score: scores[player.id] || 0,
+        rank: 0
+      });
+    }
+
+    // Sort by score descending
+    rankings.sort((a, b) => b.score - a.score);
+
+    // Assign ranks
+    rankings.forEach((ranking, index) => {
+      ranking.rank = index + 1;
+    });
+
+    return rankings;
   }
 
   private getConnectionIdByPlayerId(roomId: string, playerId: string): string | null {

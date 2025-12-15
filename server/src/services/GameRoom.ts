@@ -140,6 +140,14 @@ export class GameRoom {
     return this.correctGuessers.size >= guesserCount && guesserCount > 0;
   }
 
+  hasPlayerGuessedCorrectly(playerId: string): boolean {
+    return this.correctGuessers.has(playerId);
+  }
+
+  getCorrectGuessCount(): number {
+    return this.correctGuessers.size;
+  }
+
   getScoreboard(): Scoreboard {
     const scoreboard: Scoreboard = {};
     this.scores.forEach((score, playerId) => {

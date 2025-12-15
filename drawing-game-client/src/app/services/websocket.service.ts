@@ -18,6 +18,9 @@ export class WebSocketService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectDelay = 1000; // Start with 1 second
+  private intentionalDisconnect = false;
+  private currentRoomId: string | null = null;
+  private currentPlayerName: string | null = null;
 
   connect(roomId: string, playerName: string): void {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
@@ -25,8 +28,13 @@ export class WebSocketService {
       return;
     }
 
+    // Store connection params for reconnection
+    this.currentRoomId = roomId;
+    this.currentPlayerName = playerName;
+    this.intentionalDisconnect = false;
+
     this.connectionStatusSubject.next('connecting');
-    
+
     const wsUrl = 'ws://localhost:3000';
     this.ws = new WebSocket(wsUrl);
 
@@ -62,15 +70,15 @@ export class WebSocketService {
       this.connectionStatusSubject.next('disconnected');
       this.ws = null;
 
-      // Attempt reconnection
-      if (this.reconnectAttempts < this.maxReconnectAttempts) {
+      // Only attempt reconnection if disconnect was not intentional
+      if (!this.intentionalDisconnect && this.reconnectAttempts < this.maxReconnectAttempts) {
         this.reconnectAttempts++;
         const delay = Math.min(this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1), 8000);
         console.log(`Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
-        
+
         setTimeout(() => {
-          if (roomId && playerName) {
-            this.connect(roomId, playerName);
+          if (this.currentRoomId && this.currentPlayerName && !this.intentionalDisconnect) {
+            this.connect(this.currentRoomId, this.currentPlayerName);
           }
         }, delay);
       }
@@ -86,6 +94,10 @@ export class WebSocketService {
   }
 
   disconnect(): void {
+    this.intentionalDisconnect = true;
+    this.currentRoomId = null;
+    this.currentPlayerName = null;
+    this.reconnectAttempts = 0;
     if (this.ws) {
       this.ws.close();
       this.ws = null;
