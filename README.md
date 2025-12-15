@@ -1,95 +1,56 @@
 # Drawing Game
 
-A real-time multiplayer drawing and guessing game built with WebSockets, similar to Gartic Phone/Skribbl.io.
+A real-time multiplayer drawing and guessing game built with WebSockets, similar to Gartic Phone/Skribbl.io. Halloween themed!
+
+## Quick Start
+
+### Prerequisites
+- Node.js 20+ (`nvm use 20`)
+
+### Setup & Run
+
+```bash
+# Terminal 1 - Start the server
+cd server
+npm install
+npm run dev
+```
+
+```bash
+# Terminal 2 - Start the client
+cd drawing-game-client
+npm install
+npm start
+```
+
+Open http://localhost:4200 in your browser. Open multiple tabs/browsers to play with yourself or share the room ID with friends!
 
 ## Features
 
 - Real-time multiplayer gameplay via WebSockets
-- Automatic game start when minimum players join
+- Automatic game start when 2+ players join
 - Fair drawer rotation system
 - Time-based scoring (earlier correct guesses earn more points)
 - Room-based isolation (multiple games can run simultaneously)
-- Automatic room cleanup when empty
+- Session persistence (refresh page to reconnect)
+- 60+ Halloween-themed prompt words
+- 12 spooky avatars
 
-## Architecture
+## Tech Stack
 
-### Server (Node.js + TypeScript)
-- **WebSocket Server**: Handles real-time bidirectional communication
-- **Game Room Manager**: Manages multiple concurrent game rooms
-- **Game Room**: Handles game state, rounds, and player management
-- **Scoring Engine**: Calculates points based on guess timing
-- **Timer**: Manages round and intermission timers
+| Layer | Technologies |
+|-------|-------------|
+| **Server** | Node.js, Express, WebSockets (ws), TypeScript |
+| **Client** | Angular 17, RxJS, HTML5 Canvas, Tailwind CSS |
 
-### Client (Angular + TypeScript + Tailwind CSS)
-- Angular 17 standalone components
-- **Modern UI with Tailwind CSS** - Gradients, icons, no overflow scrolling
-- HTML5 Canvas for drawing with mouse input
-- Real-time updates via WebSocket connection
-- Reactive state management with RxJS
-- Responsive layout with Flexbox (no overflow)
+## Endpoints
 
-## Getting Started
-
-### Prerequisites
-- Node.js 20+ (use nvm: `nvm use 20`)
-- npm
-
-### Installation
-
-```bash
-cd server
-npm install
-```
-
-### Running the Server
-
-```bash
-cd server
-
-# Development mode (with auto-reload)
-./test-server.sh
-
-# Or with npm
-npm run dev
-
-# Production mode
-npm run build
-npm start
-```
-
-The server will start on port 3000 by default.
-
-### Running the Client
-
-```bash
-cd drawing-game-client
-
-# Development mode
-./start-client.sh
-
-# Or with npm
-npm start
-```
-
-The client will start on port 4200. Open http://localhost:4200 in your browser.
-
-### Testing the Server
-
-Test the health endpoint:
-```bash
-curl http://localhost:3000/health
-```
-
-Test with the included WebSocket client:
-```bash
-node test-client.js
-```
-
-## API Endpoints
-
-- `GET /health` - Health check endpoint
-- `GET /rooms` - List active game rooms
-- `ws://localhost:3000` - WebSocket endpoint for game connections
+| Endpoint | Description |
+|----------|-------------|
+| `http://localhost:4200` | Web client |
+| `ws://localhost:3000` | WebSocket server |
+| `http://localhost:3000/health` | Health check |
+| `http://localhost:3000/rooms` | List active rooms |
 
 ## WebSocket Protocol
 
@@ -219,62 +180,23 @@ server/
 └── package.json
 ```
 
-## Development Status
-
-✅ **Completed:**
-- ✅ Server infrastructure and WebSocket handling
-- ✅ Game room management and player lifecycle
-- ✅ Round management and drawer rotation
-- ✅ Guess processing and scoring
-- ✅ Drawing event broadcasting
-- ✅ Room isolation and cleanup
-- ✅ Error handling and logging
-- ✅ Angular client application
-- ✅ Canvas drawing interface with mouse input
-- ✅ All UI components (player list, scoreboard, timer, guess feed)
-- ✅ Real-time game synchronization
-- ✅ Responsive layout
-
 ## How to Play
 
-1. **Start the server** (in one terminal):
-   ```bash
-   cd server
-   ./test-server.sh
-   ```
+1. **Join a room** - Enter a Room ID and your name
+2. **Wait for players** - Game starts when 2+ players join
+3. **Draw** - When it's your turn, draw the word shown to you
+4. **Guess** - When others draw, type your guesses
+5. **Score** - Faster correct guesses earn more points!
 
-2. **Start the client** (in another terminal):
-   ```bash
-   cd drawing-game-client
-   ./start-client.sh
-   ```
+Refresh the page to reconnect to your session. Click "Leave" to exit and clear your session.
 
-3. **Open your browser** to http://localhost:4200
+## Game Configuration
 
-4. **Join a room**:
-   - Enter a Room ID (e.g., "room1")
-   - Enter your name
-   - Click "Join Game"
-
-5. **Play**:
-   - When it's your turn to draw, you'll see the word to draw
-   - Use the canvas tools to draw
-   - Other players will guess what you're drawing
-   - When you're guessing, type your guess in the input box
-   - Points are awarded for correct guesses (earlier = more points!)
-
-6. **Invite friends**:
-   - Share the same Room ID with friends
-   - Game starts automatically when 2+ players join
-
-## Next Steps
-
-1. Add property-based tests for core game logic
-2. Add round end and game end modals
-3. Add sound effects and animations
-4. Implement touch support for mobile devices
-5. Add more drawing tools (eraser, shapes, fill)
-6. Deploy to production
+Edit `server/src/config.ts` to customize:
+- Min/max players (default: 2-8)
+- Round duration (default: 60 seconds)
+- Total rounds (default: 3)
+- Prompt words
 
 ## License
 
